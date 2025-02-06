@@ -3,10 +3,8 @@ using MGSC;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using TinyJson;
-using TMPro;
 using UnityEngine;
 
 namespace QM_DisplayMovementSpeedContinued
@@ -15,7 +13,7 @@ namespace QM_DisplayMovementSpeedContinued
     {
         public const string MoveSpeedTextId = "movementSpeedText";
         public static KeyCode toggleKey = KeyCode.Comma;
-        public static bool show = true;
+        public static bool IsEnabled = true;
 
         public static ConfigDirectories ModDirectories = new ConfigDirectories();
 
@@ -32,7 +30,6 @@ namespace QM_DisplayMovementSpeedContinued
         {
             string configPath = ModDirectories.ConfigPath;
 
-
             // thanks NBK_redspy, i just looked at your code because i had no idea how to do this
             // From NBK_RedSpy:  You are welcome ;)
             if (File.Exists(configPath))
@@ -45,7 +42,7 @@ namespace QM_DisplayMovementSpeedContinued
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log("DisplayMovementSpeed: Error reading config file");
+                    Debug.Log("QM_DisplayMovementSpeedContinuedUI: Error reading config file");
                     Debug.LogException(ex);
                 }
             }
@@ -61,13 +58,13 @@ namespace QM_DisplayMovementSpeedContinued
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log("DisplayMovementSpeed: Error writing to config");
+                    Debug.Log("QM_DisplayMovementSpeedContinuedUI: Error writing to config");
                     Debug.LogException(ex);
                 }
             }
 
             // Plugin startup logic
-            var harmony = new Harmony("QM_DisplayMovementSpeedContinued");
+            var harmony = new Harmony("QM_DisplayMovementSpeedContinuedUI");
             harmony.PatchAll();
         }
 
@@ -86,7 +83,7 @@ namespace QM_DisplayMovementSpeedContinued
             {
                 uiController = GameObject.Instantiate(uiPrefab, canvasRoot).AddComponent<DisplayMovementController>();
                 uiController.LoadComponents("apcontrollerbundle");
-                uiController.name = $"[UI] DisplayMovement Controller";
+                uiController.name = $"[UI] DisplayMovementSpeedContinued";
                 uiController.DisableUI();
                 Debug.Log($"UI for DisplayMovement Controller has instantiated correctly");
             }
@@ -114,7 +111,7 @@ namespace QM_DisplayMovementSpeedContinued
 
         public static void ForceDisableUI()
         {
-            if(uiController!= null)
+            if (uiController != null)
             {
                 uiController.DisableUI();
             }
@@ -136,7 +133,6 @@ namespace QM_DisplayMovementSpeedContinued
     {
         public static void Postfix()
         {
-            // Test?
             Plugin.ForceDisableUI();
         }
     }
