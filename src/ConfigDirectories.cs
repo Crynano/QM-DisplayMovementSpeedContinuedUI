@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
-namespace QM_DisplayMovementSpeedContinued
+namespace QM_DisplayMovementSpeedContinuedUIPermanent
 {
     public class ConfigDirectories
     {

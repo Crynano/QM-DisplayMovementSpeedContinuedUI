@@ -7,7 +7,7 @@ using System.Reflection;
 using TinyJson;
 using UnityEngine;
 
-namespace QM_DisplayMovementSpeedContinued
+namespace QM_DisplayMovementSpeedContinuedUIPermanent
 {
     public class Plugin
     {
@@ -18,13 +18,15 @@ namespace QM_DisplayMovementSpeedContinued
 
         // New
         public static GameObject uiPrefab;
-        public static DisplayMovementController uiController;
 
         public static string RootFolder => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         public static bool IsHealthBarEnabled = true;
         public static bool IsAttackTypeEnabled = true;
         public static bool IsActionPointsEnabled = true;
+        public static bool IsUIEnabled = true;
+
+        public static DisplayMovementUIPooler pooler;
 
         #region MGSC Hooks
 
@@ -49,7 +51,7 @@ namespace QM_DisplayMovementSpeedContinued
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log("QM_DisplayMovementSpeedContinuedUI: Error reading config file");
+                    Debug.Log("QM_DisplayMovementSpeedContinuedUIPermanentVersion: Error reading config file");
                     Debug.LogException(ex);
                 }
             }
@@ -67,92 +69,69 @@ namespace QM_DisplayMovementSpeedContinued
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log("QM_DisplayMovementSpeedContinuedUI: Error writing to config");
+                    Debug.Log("QM_DisplayMovementSpeedContinuedUIPermanentVersion: Error writing to config");
                     Debug.LogException(ex);
                 }
             }
 
             // Plugin startup logic
-            var harmony = new Harmony("QM_DisplayMovementSpeedContinuedUI");
+            var harmony = new Harmony("QM_DisplayMovementSpeedContinuedUIPermanentVersion");
             harmony.PatchAll();
         }
 
-        // New
         [Hook(ModHookType.DungeonStarted)]
-        public static void SpawnUI(IModContext context)
+        public static void InstantiateManager(IModContext context)
         {
-            var canvasRoot = GameObject.FindObjectOfType<DungeonUI>().transform;
-            uiController = GameObject.FindObjectOfType<DisplayMovementController>();
-            uiPrefab = DataLoader.LoadFileFromBundle<GameObject>("apcontrollerbundle", "ControllerPrefab");
-            if (uiPrefab == null)
-            {
-                Debug.LogError($"Could not spawn, UI PREFAB is null");
-            }
-            else if (canvasRoot != null && uiController == null)
-            {
-                uiController = GameObject.Instantiate(uiPrefab, canvasRoot).AddComponent<DisplayMovementController>();
-                uiController.LoadComponents("apcontrollerbundle");
-                uiController.name = $"[UI] DisplayMovementSpeedContinued";
-                uiController.DisableUI();
-                Debug.Log($"UI for DisplayMovement Controller has instantiated correctly");
-            }
-            else
-            {
-                Debug.LogError($"unsupported error?");
-            }
+            // This just spawns the manager
+            var dungeonUI = GameObject.FindObjectOfType<DungeonUI>().gameObject;
+            pooler = dungeonUI.GetComponent<DisplayMovementUIPooler>();
+
+            if (pooler == null)
+                pooler = dungeonUI.AddComponent<DisplayMovementUIPooler>();
+
+            pooler.LoadDungeon();
         }
 
-        #endregion
-
-        // New
-        [Hook(ModHookType.DungeonUpdateBeforeGameLoop)]
-        public static void DungeonUpdateBeforeGameLoop(IModContext context)
+        [Hook(ModHookType.DungeonUpdateAfterGameLoop)]
+        public static void DungeonUpdateAfterGameLoop(IModContext context)
         {
+            // Instead of disabling UI on  ESC or so, why not render it first or behind of the UI.
+            //IsUIEnabled = DungeonUI.Instance != null && !DungeonUI.Instance.InventoryScreen.IsActive && !DungeonUI.Instance.MinimapScreen._active;
+            UpdateUI(DungeonGameMode.Instance.Creatures.Monsters);
             if (InputHelper.GetKeyDown(toggleKey))
             {
                 IsEnabled = !IsEnabled;
-                if (!IsEnabled) ForceDisableUI();
+                //IsUIEnabled = IsEnabled;
+            }
+        }
+        #endregion
+
+        // New
+        public static void UpdateUI(List<Creature> monsters)
+        {
+            foreach (Monster singleMonster in monsters)
+            {
+                UpdateUI(singleMonster);
             }
         }
 
-        public static void UpdateUI(CellPosition mapCell, ObjHighlightController __instance)
+        private static void UpdateUI(Monster monster)
         {
-            Monster monster = __instance._creatures.GetMonster(mapCell.X, mapCell.Y);
-            if (monster != null)
-            {
-                uiController.SetEnemy(monster, monster.transform.position);
-            }
-            else
-            {
-                uiController.DisableUI();
-            }
+            pooler.GetInstance(monster).UpdateElement();
         }
 
         public static void ForceDisableUI()
         {
-            if (uiController != null)
-            {
-                uiController.DisableUI();
-            }
+            IsUIEnabled = false;
         }
     }
 
-    // Custom new patch for UI
-    [HarmonyPatch(typeof(ObjHighlightController), nameof(ObjHighlightController.Process))]
-    public static class Patch_ObjHighlightController_Process
-    {
-        public static void Postfix(CellPosition cellUnderCursor, ObjHighlightController __instance)
-        {
-            Plugin.UpdateUI(cellUnderCursor, __instance);
-        }
-    }
-
-    [HarmonyPatch(typeof(ObjHighlightController), nameof(ObjHighlightController.Unhighlight))]
-    public static class Patch_ObjHighlightController_Unhighlight
-    {
-        public static void Postfix()
-        {
-            Plugin.ForceDisableUI();
-        }
-    }
+    //[HarmonyPatch(typeof(ObjHighlightController), nameof(ObjHighlightController.Unhighlight))]
+    //public static class Patch_ObjHighlightController_Unhighlight
+    //{
+    //    public static void Postfix()
+    //    {
+    //        Plugin.ForceDisableUI();
+    //    }
+    //}
 }

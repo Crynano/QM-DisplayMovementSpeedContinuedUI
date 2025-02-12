@@ -14,7 +14,7 @@
 	<PropertyGroup>
 		<WorkshopPath>$(GAME_PATH)\..\..\workshop\content\2059170\$(SteamId)\</WorkshopPath>
 		<ManagedPath>$(GAME_PATH)\$(GAME_NAME)_Data\Managed\</ManagedPath>
-		<ModPath>E:\Mods\Projects\DisplayMovementSpeedUpgradedUI</ModPath>
+		<ModPath>E:\Mods\QM_DisplayMovementSpeedUpgradedUIPermanent</ModPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" publicize="true">

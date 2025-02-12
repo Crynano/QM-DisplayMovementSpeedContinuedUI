@@ -1,7 +1,7 @@
 {
-  "UniqueModName": "Crynano_QM_DisplayMovementSpeedContinuedUI",
+  "UniqueModName": "Crynano_QM_DisplayMovementSpeedContinuedUIPermanent",
   "Assemblies": [
-    "QM_DisplayMovementSpeedContinuedUI.dll"
+    "QM_DisplayMovementSpeedContinuedUIPermanent.dll"
   ],
   "Dependencies": []
 }

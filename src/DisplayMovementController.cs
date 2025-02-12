@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace QM_DisplayMovementSpeedContinued
+namespace QM_DisplayMovementSpeedContinuedUIPermanent
 {
     public class DisplayMovementController : MonoBehaviour
     {
@@ -57,23 +57,19 @@ namespace QM_DisplayMovementSpeedContinued
             AttackTypeImage.sprite = defaultSprite;
         }
 
-        public void SetEnemy(Monster monster, Vector3 worldPos)
+        public void SetEnemy(Monster monster)
         {
-            if (monster == null) return;
+            AttachToNewMonster(monster);
+            ChangeSprite(monster);
 
-            if (monster.CreatureData.Health.Dead)
-            {
-                return;
-            }
-
-            if (!monster.IsSeenByPlayer) return;
+            Vector3 monsterPos = lastMonster.transform.position;
 
             if (Camera.main != null)
             {
                 // Set object world pos to UI!
                 // Didn't remember about the concese calculation, so:
                 // https://discussions.unity.com/t/how-to-convert-from-world-space-to-canvas-space/117981
-                Vector2 viewPortPos = Camera.main.WorldToViewportPoint(worldPos + Vector3.Scale(Camera.main.transform.up, Adjustment));
+                Vector2 viewPortPos = Camera.main.WorldToViewportPoint(monsterPos + Vector3.Scale(Camera.main.transform.up, Adjustment));
                 Vector2 WorldObject_ScreenPosition = new Vector2(
                             ((viewPortPos.x * Canvas.sizeDelta.x) - (Canvas.sizeDelta.x * 0.5f)),
                             ((viewPortPos.y * Canvas.sizeDelta.y) - (Canvas.sizeDelta.y * 0.5f)));
@@ -85,16 +81,39 @@ namespace QM_DisplayMovementSpeedContinued
                 Debug.LogError($"Camera.main is null, UI not tracking enemy correctly.");
             }
 
-            if (lastMonster == null || monster != lastMonster)
-            {
-                AttachToNewMonster(monster);
-                ChangeSprite(monster);
-            }
-
-            HealthBar.fillAmount = monster.CreatureData.Health.Percent;
-            APTextObject.text = $"{monster.ActionPointsLeft}";  //$"{monster.ActionPointsLeft}/{monster.ActionPoints}";
+            HealthBar.fillAmount = lastMonster.CreatureData.Health.Percent;
+            APTextObject.text = $"{lastMonster.ActionPoints}";  //$"{monster.ActionPointsLeft}/{monster.ActionPoints}";
 
             EnableUI();
+        }
+
+        public void UpdateElement()
+        {
+            if (lastMonster == null || lastMonster.CreatureData.Health.Dead || !lastMonster.IsSeenByPlayer)
+            {
+                DisableUI();
+                return;
+            }
+
+            if (Camera.main != null)
+            {
+                // Set object world pos to UI!
+                // Didn't remember about the concese calculation, so:
+                // https://discussions.unity.com/t/how-to-convert-from-world-space-to-canvas-space/117981
+                Vector2 viewPortPos = Camera.main.WorldToViewportPoint(lastMonster.transform.position + Vector3.Scale(Camera.main.transform.up, Adjustment));
+                Vector2 WorldObject_ScreenPosition = new Vector2(
+                            ((viewPortPos.x * Canvas.sizeDelta.x) - (Canvas.sizeDelta.x * 0.5f)),
+                            ((viewPortPos.y * Canvas.sizeDelta.y) - (Canvas.sizeDelta.y * 0.5f)));
+                //viewPortPos += Adjustment;
+                ((RectTransform)transform).anchoredPosition = WorldObject_ScreenPosition;
+                HealthBar.fillAmount = lastMonster.CreatureData.Health.Percent;
+                APTextObject.text = $"{lastMonster.ActionPoints}";  //$"{monster.ActionPointsLeft}/{monster.ActionPoints}";
+                EnableUI();
+            }
+            else
+            {
+                Debug.LogError($"Camera.main is null, UI not tracking enemy correctly.");
+            }
         }
 
         public void AttachToNewMonster(Monster newMonster)
@@ -136,6 +155,7 @@ namespace QM_DisplayMovementSpeedContinued
 
         private void EnableUI()
         {
+            //if (!Plugin.IsUIEnabled) { DisableUI(); return; }
             this.AttackTypeImage.gameObject.SetActive(Plugin.IsAttackTypeEnabled);
             this.HealthBar.transform.parent.gameObject.SetActive(Plugin.IsHealthBarEnabled);
             this.APTextObject.gameObject.SetActive(Plugin.IsActionPointsEnabled);
