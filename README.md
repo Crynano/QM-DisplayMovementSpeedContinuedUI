@@ -1,4 +1,6 @@
 # Display Movement Speed Continued - UI [Permanent Version]
+![Melee and ranged UI example](./media/thumbnail.png)
+
 This version of Display Movement Speed mod shows UI on every visible enemy.
 
 The UI features a health bar, an icon for melee/ranged enemy and action points remaining.
