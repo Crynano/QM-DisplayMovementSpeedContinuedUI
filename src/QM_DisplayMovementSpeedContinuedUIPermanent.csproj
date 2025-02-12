@@ -6,7 +6,7 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<GAME_NAME>Quasimorph</GAME_NAME>
-		<SteamId>3422733738</SteamId>
+		<SteamId>3426072300</SteamId>
 	</PropertyGroup>
 	<PropertyGroup>
 		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">D:\SteamLibrary\steamapps\common\$(GAME_NAME)</GAME_PATH>
