@@ -6,19 +6,15 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<GAME_NAME>Quasimorph</GAME_NAME>
-		<SteamId>3417898256</SteamId>
+		<SteamId>3422733738</SteamId>
 	</PropertyGroup>
 	<PropertyGroup>
-		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App $(GAME_STEAM_ID)', 'InstallLocation', null, RegistryView.Registry64, RegistryView.Registry32))</GAME_PATH>
-		<_SteamLibraryPath>$([MSBuild]::GetRegistryValueFromView('HKEY_CURRENT_USER\SOFTWARE\Valve\Steam', 'SteamPath', null, RegistryView.Registry32))</_SteamLibraryPath>
-		<GAME_PATH Condition="!Exists('$(GAME_PATH)') AND '$(_SteamLibraryPath)' != ''">$(_SteamLibraryPath)\steamapps\common\$(GAME_NAME)</GAME_PATH>
-		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">C:\Program Files\Steam\steamapps\common\$(GAME_NAME)</GAME_PATH>
-		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">C:\Program Files (x86)\Steam\steamapps\common\$(GAME_NAME)</GAME_PATH>
 		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">D:\SteamLibrary\steamapps\common\$(GAME_NAME)</GAME_PATH>
 	</PropertyGroup>
 	<PropertyGroup>
 		<WorkshopPath>$(GAME_PATH)\..\..\workshop\content\2059170\$(SteamId)\</WorkshopPath>
 		<ManagedPath>$(GAME_PATH)\$(GAME_NAME)_Data\Managed\</ManagedPath>
+		<ModPath>E:\Mods\Projects\DisplayMovementSpeedUpgradedUI</ModPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" publicize="true">

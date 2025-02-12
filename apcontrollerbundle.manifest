@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 9569614
+CRC: 4135166947
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 09a644ea7b43dea8b8dce97786642646
+    Hash: 366d1ce1470acf61a43a65b85a7a8104
   TypeTreeHash:
     serializedVersion: 2
     Hash: 84cec66a0edd52496246d0e84d217a42
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 09a644ea7b43dea8b8dce97786642646
+    Hash: 366d1ce1470acf61a43a65b85a7a8104
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -69,15 +69,15 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
 - Assets/Font/MinecraftRegular-Bmg3 SDF.asset
+- Assets/Mods/APController/ranged.png
 - Assets/Textures/whiteTex.png
 - Assets/Mods/APController/meleeRed.png
 - Assets/TextMesh Pro/Shaders/TMP_SDF.shader
 - Assets/Font/MinecraftRegular-Bmg3.otf
 - Assets/Mods/APController/ControllerPrefab.prefab
 - Assets/Mods/APController/default.png
-- Assets/Mods/APController/ranged.png
 - Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
 - Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Text Component Icon.psd
-- Assets/Mods/APController/rangedRed.png
 - Assets/Mods/APController/melee.png
+- Assets/Mods/APController/rangedRed.png
 Dependencies: []

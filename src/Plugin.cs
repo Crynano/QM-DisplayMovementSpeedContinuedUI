@@ -11,7 +11,6 @@ namespace QM_DisplayMovementSpeedContinued
 {
     public class Plugin
     {
-        public const string MoveSpeedTextId = "movementSpeedText";
         public static KeyCode toggleKey = KeyCode.Comma;
         public static bool IsEnabled = true;
 
@@ -23,6 +22,10 @@ namespace QM_DisplayMovementSpeedContinued
 
         public static string RootFolder => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
+        public static bool IsHealthBarEnabled = true;
+        public static bool IsAttackTypeEnabled = true;
+        public static bool IsActionPointsEnabled = true;
+
         #region MGSC Hooks
 
         [Hook(ModHookType.AfterBootstrap)]
@@ -32,6 +35,7 @@ namespace QM_DisplayMovementSpeedContinued
 
             // thanks NBK_redspy, i just looked at your code because i had no idea how to do this
             // From NBK_RedSpy:  You are welcome ;)
+            // samee
             if (File.Exists(configPath))
             {
                 try
@@ -39,6 +43,9 @@ namespace QM_DisplayMovementSpeedContinued
                     string fileJson = File.ReadAllText(configPath);
                     Dictionary<string, string> values = fileJson.FromJson<Dictionary<string, string>>();
                     toggleKey = (KeyCode)Enum.Parse(typeof(KeyCode), values["toggleKey"]);
+                    IsHealthBarEnabled = bool.Parse(values["IsHealthBarEnabled"]);
+                    IsAttackTypeEnabled = bool.Parse(values["IsAttackTypeEnabled"]);
+                    IsActionPointsEnabled = bool.Parse(values["IsActionPointsEnabled"]);
                 }
                 catch (Exception ex)
                 {
@@ -50,10 +57,12 @@ namespace QM_DisplayMovementSpeedContinued
             {
                 try
                 {
-
                     Directory.CreateDirectory(ModDirectories.ModPersistenceFolder);
 
-                    var text = "{\"toggleKey\":\"Comma\"}";
+                    var text = "{\"toggleKey\":\"Comma\",";
+                    text += "\"IsHealthBarEnabled\":\"true\",";
+                    text += "\"IsAttackTypeEnabled\":\"true\",";
+                    text += "\"IsActionPointsEnabled\":\"true\"}";
                     File.WriteAllText(configPath, text);
                 }
                 catch (Exception ex)
@@ -96,6 +105,16 @@ namespace QM_DisplayMovementSpeedContinued
         #endregion
 
         // New
+        [Hook(ModHookType.DungeonUpdateBeforeGameLoop)]
+        public static void DungeonUpdateBeforeGameLoop(IModContext context)
+        {
+            if (InputHelper.GetKeyDown(toggleKey))
+            {
+                IsEnabled = !IsEnabled;
+                if (!IsEnabled) ForceDisableUI();
+            }
+        }
+
         public static void UpdateUI(CellPosition mapCell, ObjHighlightController __instance)
         {
             Monster monster = __instance._creatures.GetMonster(mapCell.X, mapCell.Y);

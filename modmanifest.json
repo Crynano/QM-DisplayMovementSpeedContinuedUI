@@ -1,7 +1,7 @@
 {
-  "UniqueModName": "NBKRedSpy_QM_DisplayMovement_Continued",
+  "UniqueModName": "Crynano_QM_DisplayMovementSpeedContinuedUI",
   "Assemblies": [
-    "QM_DisplayMovementSpeedContinued.dll"
+    "QM_DisplayMovementSpeedContinuedUI.dll"
   ],
   "Dependencies": []
 }

@@ -11,7 +11,7 @@ namespace QM_DisplayMovementSpeedContinued
     public class DisplayMovementController : MonoBehaviour
     {
         [Header("Manual adjusting")]
-        public Vector3 Adjustment = new Vector3(0f, 0.2f, 0f);
+        public Vector3 Adjustment = new Vector3(0f, 0.15f, 0f);
 
         [Header("Components")]
         public TextMeshProUGUI APTextObject;
@@ -136,6 +136,9 @@ namespace QM_DisplayMovementSpeedContinued
 
         private void EnableUI()
         {
+            this.AttackTypeImage.gameObject.SetActive(Plugin.IsAttackTypeEnabled);
+            this.HealthBar.transform.parent.gameObject.SetActive(Plugin.IsHealthBarEnabled);
+            this.APTextObject.gameObject.SetActive(Plugin.IsActionPointsEnabled);
             this.Root.gameObject.SetActive(true);
         }
 
