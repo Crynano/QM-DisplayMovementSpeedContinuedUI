@@ -91,6 +91,7 @@ namespace QM_DisplayMovementSpeedContinued
             else if (canvasRoot != null && uiController == null)
             {
                 uiController = GameObject.Instantiate(uiPrefab, canvasRoot).AddComponent<DisplayMovementController>();
+                uiController.transform.SetAsFirstSibling();
                 uiController.LoadComponents("apcontrollerbundle");
                 uiController.name = $"[UI] DisplayMovementSpeedContinued";
                 uiController.DisableUI();
@@ -111,7 +112,7 @@ namespace QM_DisplayMovementSpeedContinued
             if (InputHelper.GetKeyDown(toggleKey))
             {
                 IsEnabled = !IsEnabled;
-                if (!IsEnabled) ForceDisableUI();
+                uiController.gameObject.SetActive(IsEnabled);
             }
         }
 
