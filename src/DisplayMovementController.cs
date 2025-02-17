@@ -31,7 +31,7 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
 
         public void LoadComponents(string bundleName)
         {
-            Canvas = GameObject.FindObjectOfType<DungeonUI>().GetComponentInParent<Canvas>().transform as RectTransform;
+            Canvas = this.gameObject.GetComponentInParent<Canvas>().transform as RectTransform;
 
             APTextObject = this.transform.GetComponentInChildren<TextMeshProUGUI>();
 

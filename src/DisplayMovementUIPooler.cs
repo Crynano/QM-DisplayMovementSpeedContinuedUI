@@ -1,5 +1,4 @@
 ﻿using MGSC;
-using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,10 +16,18 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
         public void LoadDungeon()
         {
             register = new Dictionary<Monster, DisplayMovementController>();
-            canvasRoot = GameObject.FindObjectOfType<DungeonUI>().transform;
+            canvasRoot = this.gameObject.transform;
             uiPrefab = DataLoader.LoadFileFromBundle<GameObject>("apcontrollerbundle", "ControllerPrefab");
 
             CreateInstancesForAllVisibleEnemies();
+        }
+
+        public void UnloadDungeon()
+        {
+            foreach (var item in pooledObjects)
+            {
+                Destroy(item.gameObject);
+            }
         }
 
         // On dungeon load, this must be executed?
@@ -83,6 +90,11 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
                 return uiController;
             }
             return null;
+        }
+
+        public void OnDestroy()
+        {
+            UnloadDungeon();
         }
     }
 }

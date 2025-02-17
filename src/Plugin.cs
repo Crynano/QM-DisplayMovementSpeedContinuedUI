@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using TinyJson;
 using UnityEngine;
+using System.Linq;
 
 namespace QM_DisplayMovementSpeedContinuedUIPermanent
 {
@@ -15,9 +16,6 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
         public static bool IsEnabled = true;
 
         public static ConfigDirectories ModDirectories = new ConfigDirectories();
-
-        // New
-        public static GameObject uiPrefab;
 
         public static string RootFolder => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
@@ -83,7 +81,18 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
         public static void InstantiateManager(IModContext context)
         {
             // This just spawns the manager
-            var dungeonUI = GameObject.FindObjectOfType<DungeonUI>().gameObject;
+            var canvas = GameObject.FindObjectsOfType<Canvas>().First(x => x.name.Contains("UI"));
+            var dungeonUI = canvas.transform.Find("Content").gameObject;
+
+            try
+            {
+                if (dungeonUI.transform.Find("DungeonUI").gameObject != null)
+                    dungeonUI = dungeonUI.transform.Find("DungeonUI").gameObject;
+            }
+            catch(Exception e) { }
+            
+            //var dungeonUI = GameObject.FindObjectOfType<DungeonUI>().gameObject;
+
             pooler = dungeonUI.GetComponent<DisplayMovementUIPooler>();
 
             if (pooler == null)
@@ -91,6 +100,13 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
 
             pooler.LoadDungeon();
         }
+
+        [Hook(ModHookType.DungeonFinished)]
+        public static void Unload(IModContext context)
+        {
+            pooler?.UnloadDungeon();
+        }
+
 
         [Hook(ModHookType.DungeonUpdateAfterGameLoop)]
         public static void DungeonUpdateAfterGameLoop(IModContext context)
@@ -117,7 +133,7 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
 
         private static void UpdateUI(Monster monster)
         {
-            pooler.GetInstance(monster).UpdateElement();
+            pooler?.GetInstance(monster)?.UpdateElement();
         }
 
         public static void ForceDisableUI()
