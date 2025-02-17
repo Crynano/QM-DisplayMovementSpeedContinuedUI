@@ -23,15 +23,16 @@ namespace QM_DisplayMovementSpeedContinued
         [SerializeField] private Sprite rangedSprite;
         [SerializeField] private Sprite defaultSprite;
 
-        private RectTransform Root;
 
         private Monster lastMonster;
+
+        private RectTransform Root;
 
         private RectTransform Canvas;
 
         public void LoadComponents(string bundleName)
         {
-            Canvas = GameObject.FindObjectOfType<DungeonUI>().GetComponentInParent<Canvas>().transform as RectTransform;
+            Canvas = this.gameObject.GetComponentInParent<Canvas>().transform as RectTransform;
 
             APTextObject = this.transform.GetComponentInChildren<TextMeshProUGUI>();
 
@@ -92,7 +93,7 @@ namespace QM_DisplayMovementSpeedContinued
             }
 
             HealthBar.fillAmount = monster.CreatureData.Health.Percent;
-            APTextObject.text = $"{monster.ActionPointsLeft}";  //$"{monster.ActionPointsLeft}/{monster.ActionPoints}";
+            APTextObject.text = $"{monster.ActionPoints}";  //$"{monster.ActionPointsLeft}/{monster.ActionPoints}";
 
             EnableUI();
         }

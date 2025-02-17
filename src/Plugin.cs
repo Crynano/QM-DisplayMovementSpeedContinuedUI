@@ -3,6 +3,7 @@ using MGSC;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using TinyJson;
 using UnityEngine;
@@ -81,16 +82,26 @@ namespace QM_DisplayMovementSpeedContinued
         [Hook(ModHookType.DungeonStarted)]
         public static void SpawnUI(IModContext context)
         {
-            var canvasRoot = GameObject.FindObjectOfType<DungeonUI>().transform;
+            // This just spawns the manager
+            var canvas = GameObject.FindObjectsOfType<Canvas>().First(x => x.name.Contains("UI"));
+            var dungeonUI = canvas.transform.Find("Content").gameObject;
+
+            try
+            {
+                if (dungeonUI.transform.Find("DungeonUI").gameObject != null)
+                    dungeonUI = dungeonUI.transform.Find("DungeonUI").gameObject;
+            }
+            catch (Exception e) { }
+
             uiController = GameObject.FindObjectOfType<DisplayMovementController>();
             uiPrefab = DataLoader.LoadFileFromBundle<GameObject>("apcontrollerbundle", "ControllerPrefab");
             if (uiPrefab == null)
             {
                 Debug.LogError($"Could not spawn, UI PREFAB is null");
             }
-            else if (canvasRoot != null && uiController == null)
+            else if (dungeonUI.transform != null && uiController == null)
             {
-                uiController = GameObject.Instantiate(uiPrefab, canvasRoot).AddComponent<DisplayMovementController>();
+                uiController = GameObject.Instantiate(uiPrefab, dungeonUI.transform).AddComponent<DisplayMovementController>();
                 uiController.transform.SetAsFirstSibling();
                 uiController.LoadComponents("apcontrollerbundle");
                 uiController.name = $"[UI] DisplayMovementSpeedContinued";
@@ -101,6 +112,12 @@ namespace QM_DisplayMovementSpeedContinued
             {
                 Debug.LogError($"unsupported error?");
             }
+        }
+
+        [Hook(ModHookType.DungeonFinished)]
+        public static void CleanUI(IModContext context)
+        {
+            GameObject.Destroy(uiController);
         }
 
         #endregion
