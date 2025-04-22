@@ -27,6 +27,12 @@ namespace QM_DisplayMovementSpeedContinued
         public static bool IsAttackTypeEnabled = true;
         public static bool IsActionPointsEnabled = true;
 
+        [Header("Settings")]
+        public static float minScale = 0.66f;
+        public static float maxScale = 1.0f;
+
+        public static GameCamera gameCamera;
+
         #region MGSC Hooks
 
         [Hook(ModHookType.AfterBootstrap)]
@@ -82,6 +88,7 @@ namespace QM_DisplayMovementSpeedContinued
         [Hook(ModHookType.DungeonStarted)]
         public static void SpawnUI(IModContext context)
         {
+            gameCamera = GameObject.FindObjectOfType<GameCamera>();
             // This just spawns the manager
             var canvas = GameObject.FindObjectsOfType<Canvas>().First(x => x.name.Contains("UI"));
             var dungeonUI = canvas.transform.Find("Content").gameObject;
@@ -106,7 +113,9 @@ namespace QM_DisplayMovementSpeedContinued
                 uiController.LoadComponents("apcontrollerbundle");
                 uiController.name = $"[UI] DisplayMovementSpeedContinued";
                 uiController.DisableUI();
+#if DEBUG
                 Debug.Log($"UI for DisplayMovement Controller has instantiated correctly");
+#endif
             }
             else
             {
@@ -120,7 +129,7 @@ namespace QM_DisplayMovementSpeedContinued
             GameObject.Destroy(uiController);
         }
 
-        #endregion
+#endregion
 
         // New
         [Hook(ModHookType.DungeonUpdateBeforeGameLoop)]
@@ -135,10 +144,18 @@ namespace QM_DisplayMovementSpeedContinued
 
         public static void UpdateUI(CellPosition mapCell, ObjHighlightController __instance)
         {
+            var scaleSize = maxScale;
+            if (gameCamera != null)
+            {
+                // We can set the scale of the UI according to the current level and the UI sizes we know that fit.
+                scaleSize = Mathf.Lerp(maxScale, minScale, 
+                    (float)gameCamera._currentZoomIndex / (float)gameCamera._zoomLevels.Length);
+            }
+
             Monster monster = __instance._creatures.GetMonster(mapCell.X, mapCell.Y);
             if (monster != null)
             {
-                uiController.SetEnemy(monster, monster.transform.position);
+                uiController.SetEnemy(monster, monster.transform.position, scaleSize);
             }
             else
             {

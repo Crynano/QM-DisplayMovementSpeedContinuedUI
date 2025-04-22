@@ -58,7 +58,7 @@ namespace QM_DisplayMovementSpeedContinued
             AttackTypeImage.sprite = defaultSprite;
         }
 
-        public void SetEnemy(Monster monster, Vector3 worldPos)
+        public void SetEnemy(Monster monster, Vector3 worldPos, float scaleSize)
         {
             if (monster == null) return;
 
@@ -80,6 +80,8 @@ namespace QM_DisplayMovementSpeedContinued
                             ((viewPortPos.y * Canvas.sizeDelta.y) - (Canvas.sizeDelta.y * 0.5f)));
                 //viewPortPos += Adjustment;
                 ((RectTransform)transform).anchoredPosition = WorldObject_ScreenPosition;
+
+                ((RectTransform)transform).localScale = new Vector3(scaleSize, scaleSize, scaleSize);
             }
             else
             {
