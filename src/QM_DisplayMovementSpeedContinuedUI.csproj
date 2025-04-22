@@ -6,15 +6,14 @@
 	</PropertyGroup>
 	<PropertyGroup>
 		<GAME_NAME>Quasimorph</GAME_NAME>
-		<SteamId>3422733738</SteamId>
+		<MOD_ID>3422733738</MOD_ID>
+		<GAME_PATH>D:\SteamLibrary\steamapps\common\$(GAME_NAME)</GAME_PATH>
 	</PropertyGroup>
 	<PropertyGroup>
-		<GAME_PATH Condition="!Exists('$(GAME_PATH)')">D:\SteamLibrary\steamapps\common\$(GAME_NAME)</GAME_PATH>
 	</PropertyGroup>
 	<PropertyGroup>
-		<WorkshopPath>$(GAME_PATH)\..\..\workshop\content\2059170\$(SteamId)\</WorkshopPath>
+		<WorkshopPath>$(GAME_PATH)\..\..\workshop\content\2059170\$(MOD_ID)\</WorkshopPath>
 		<ManagedPath>$(GAME_PATH)\$(GAME_NAME)_Data\Managed\</ManagedPath>
-		<ModPath>E:\Mods\Projects\DisplayMovementSpeedUpgradedUI</ModPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" publicize="true">
@@ -75,16 +74,15 @@
 	<PropertyGroup>
 		<AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
 		<PackageFolder>$(ProjectDir)../package/</PackageFolder>
-
 	</PropertyGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="@echo off&#xD;&#xA;set deployDir=&quot;$(WorkshopPath)&quot;&#xD;&#xA;&#xD;&#xA;xcopy /f /y &quot;../modmanifest.json&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;&#xD;&#xA;if '$(SteamId)'=='' (echo SteamId in project not set.  Aborting Workshop Deployment &amp;&amp; exit)&#xD;&#xA;echo deploying to %25deployDir%25&#xD;&#xA;&#xD;&#xA;mkdir &quot;$(WorkshopPath)&quot;&#xD;&#xA;&#xD;&#xA;xcopy /f /y &quot;$(ProjectDir)../media/thumbnail.png&quot; %25deployDir%25&#xD;&#xA;xcopy /f /y &quot;$(ProjectDir)../modmanifest.json&quot; %25deployDir%25&#xD;&#xA;&#xD;&#xA;xcopy /f /y   &quot;$(TargetDir)$(TargetName).*&quot; %25deployDir%25&#xD;&#xA;xcopy /f /y   &quot;$(TargetDir)0Harmony.dll&quot; %25deployDir%25&#xD;&#xA;&#xD;&#xA;" />
+		<Exec Command="@echo off&#xD;&#xA;set deployDir=&quot;$(WorkshopPath)&quot;&#xD;&#xA;&#xD;&#xA;xcopy /f /y &quot;../modmanifest.json&quot; &quot;$(TargetDir)&quot;&#xD;&#xA;&#xD;&#xA;if '$(MOD_ID)'=='' (echo MOD_ID in project not set.  Aborting Workshop Deployment &amp;&amp; exit)&#xD;&#xA;echo deploying to %25deployDir%25&#xD;&#xA;&#xD;&#xA;mkdir &quot;$(WorkshopPath)&quot;&#xD;&#xA;&#xD;&#xA;xcopy /f /y &quot;$(ProjectDir)../media/thumbnail.png&quot; %25deployDir%25&#xD;&#xA;xcopy /f /y &quot;$(ProjectDir)../modmanifest.json&quot; %25deployDir%25&#xD;&#xA;&#xD;&#xA;xcopy /f /y   &quot;$(TargetDir)$(TargetName).*&quot; %25deployDir%25&#xD;&#xA;xcopy /f /y   &quot;$(TargetDir)0Harmony.dll&quot; %25deployDir%25&#xD;&#xA;&#xD;&#xA;" />
 		<ItemGroup>
 			<WorkshopSourceFile Include="$(WorkshopPath)*.*" />
 			<PackageRemoveFiles Include="$(PackageFolder)$(TargetName)/*.pdb" />
 		</ItemGroup>
 	</Target>
-	<Target Condition="'$(SteamId)'!=''" Name="PostBuildPackage" AfterTargets="PostBuildEvent">
+	<Target Condition="'$(MOD_ID)'!=''" Name="PostBuildPackage" AfterTargets="PostBuildEvent">
 		<ItemGroup>
 			<WorkshopSourceFile Include="$(WorkshopPath)*.*" />
 			<PackageRemoveFiles Include="$(PackageFolder)$(TargetName)/*.pdb" />

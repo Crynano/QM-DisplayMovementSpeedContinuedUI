@@ -125,10 +125,11 @@ namespace QM_DisplayMovementSpeedContinued
             AttackTypeImage.sprite = hasRanged ? rangedSprite : meleeSprite;
         }
 
-        private void OnDestroy()
-        {
-            lastMonster.CreatureData.Health.Killed -= OnAttachedDead;
-        }
+        //private void OnDestroy()
+        //{
+        //    if (lastMonster != null && lastMonster.CreatureData != null) 
+        //        lastMonster.CreatureData.Health.Killed -= OnAttachedDead;
+        //}
 
         public void DisableUI()
         {
