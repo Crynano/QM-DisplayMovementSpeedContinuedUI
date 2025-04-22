@@ -41,13 +41,13 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
             }
         }
 
-        public void ForceUpdateAll()
-        {
-            foreach (var item in pooledObjects)
-            {
-                item.UpdateElement();
-            }
-        }
+        //public void ForceUpdateAll()
+        //{
+        //    foreach (var item in pooledObjects)
+        //    {
+        //        item.UpdateElement();
+        //    }
+        //}
 
         public DisplayMovementController GetInstance(Monster monster)
         {
@@ -63,7 +63,9 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
             }
             else
             {
+#if DEBUG
                 Debug.Log("Selected object is null, creating an empty one");
+#endif
                 var a = CreateInstance();
                 pooledObjects.Add(a);
                 a.SetEnemy(monster);
@@ -76,7 +78,9 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
         {
             if (uiPrefab == null)
             {
+#if DEBUG
                 Debug.LogError($"Could not spawn, UI PREFAB is null");
+#endif
             }
             else if (canvasRoot != null)
             {
@@ -86,7 +90,9 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
                 uiController.LoadComponents("apcontrollerbundle");
                 uiController.name = $"[UI] DisplayMovement Controller";
                 uiController.DisableUI();
+#if DEBUG
                 Debug.Log($"UI for DisplayMovement Controller has instantiated correctly");
+#endif
                 return uiController;
             }
             return null;

@@ -24,7 +24,13 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
         public static bool IsActionPointsEnabled = true;
         public static bool IsUIEnabled = true;
 
-        public static DisplayMovementUIPooler pooler;
+        [Header("Config")]
+        public static float minScale = .66f;
+        public static float maxScale = 1f;
+
+        internal static DisplayMovementUIPooler pooler;
+
+        internal static GameCamera gameCamera;
 
         #region MGSC Hooks
 
@@ -80,6 +86,7 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
         [Hook(ModHookType.DungeonStarted)]
         public static void InstantiateManager(IModContext context)
         {
+            gameCamera = GameObject.FindObjectOfType<GameCamera>();
             // This just spawns the manager
             var canvas = GameObject.FindObjectsOfType<Canvas>().First(x => x.name.Contains("UI"));
             var dungeonUI = canvas.transform.Find("Content").gameObject;
@@ -125,15 +132,20 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
         // New
         public static void UpdateUI(List<Creature> monsters)
         {
+            var sizeDelta = maxScale;
+            if (gameCamera != null)
+            {
+                sizeDelta = Mathf.Lerp(maxScale, minScale, (float)gameCamera._currentZoomIndex / (float)gameCamera._zoomLevels.Length);
+            }
             foreach (Monster singleMonster in monsters)
             {
-                UpdateUI(singleMonster);
+                UpdateUI(singleMonster, sizeDelta);
             }
         }
 
-        private static void UpdateUI(Monster monster)
+        private static void UpdateUI(Monster monster, float sizeDelta)
         {
-            pooler?.GetInstance(monster)?.UpdateElement();
+            pooler?.GetInstance(monster)?.UpdateElement(sizeDelta);
         }
 
         public static void ForceDisableUI()

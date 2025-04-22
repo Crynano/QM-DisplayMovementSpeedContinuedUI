@@ -18,7 +18,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" publicize="true">
-			<HintPath>$(ManagedPath)Assembly-CSharp.dll</HintPath>
+		  <HintPath>$(ManagedPath)Assembly-CSharp.dll</HintPath>
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">

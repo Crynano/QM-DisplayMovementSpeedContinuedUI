@@ -87,7 +87,7 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
             EnableUI();
         }
 
-        public void UpdateElement()
+        public void UpdateElement(float sizeDelta)
         {
             if (lastMonster == null || lastMonster.CreatureData.Health.Dead || !lastMonster.IsSeenByPlayer)
             {
@@ -108,6 +108,12 @@ namespace QM_DisplayMovementSpeedContinuedUIPermanent
                 ((RectTransform)transform).anchoredPosition = WorldObject_ScreenPosition;
                 HealthBar.fillAmount = lastMonster.CreatureData.Health.Percent;
                 APTextObject.text = $"{lastMonster.ActionPoints}";  //$"{monster.ActionPointsLeft}/{monster.ActionPoints}";
+
+                // Trying to adapt size to zoom.
+                //((RectTransform)transform).sizeDelta = new Vector2(sizeDelta, sizeDelta);
+                //((RectTransform)transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, sizeDelta);
+                //((RectTransform)transform).SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, sizeDelta);
+                ((RectTransform)transform).localScale = new Vector3(sizeDelta, sizeDelta, sizeDelta);
                 EnableUI();
             }
             else
