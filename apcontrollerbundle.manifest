@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 4135166947
+CRC: 2260504709
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 366d1ce1470acf61a43a65b85a7a8104
+    Hash: 5d8b3eaddc32800b2cfcd8774f7af8aa
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 84cec66a0edd52496246d0e84d217a42
+    Hash: fe3e8e949e0efe426ded29b202621a47
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 366d1ce1470acf61a43a65b85a7a8104
+    Hash: 5d8b3eaddc32800b2cfcd8774f7af8aa
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -20,10 +20,18 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
-- Class: 114
-  Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+- Class: 74
+  Script: {instanceID: 0}
+- Class: 91
+  Script: {instanceID: 0}
+- Class: 95
+  Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
 - Class: 114
@@ -69,15 +77,18 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
 - Assets/Font/MinecraftRegular-Bmg3 SDF.asset
-- Assets/Mods/APController/ranged.png
-- Assets/Textures/whiteTex.png
-- Assets/Mods/APController/meleeRed.png
+- Assets/Mods/APController/Sprites/ranged.png
 - Assets/TextMesh Pro/Shaders/TMP_SDF.shader
+- Assets/Mods/APController/Animations/HealthBarBlink.anim
+- Assets/Mods/APController/Animations/HealthBarStatic.anim
+- Assets/Sprite/cnd_filled.asset
+- Assets/Texture2D/cnd_filled.png
+- Assets/Mods/APController/Sprites/Marks.png
 - Assets/Font/MinecraftRegular-Bmg3.otf
-- Assets/Mods/APController/ControllerPrefab.prefab
-- Assets/Mods/APController/default.png
+- Assets/Mods/APController/Prefabs/ControllerPrefab.prefab
+- Assets/Mods/APController/Sprites/default.png
 - Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
 - Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Text Component Icon.psd
-- Assets/Mods/APController/melee.png
-- Assets/Mods/APController/rangedRed.png
+- Assets/Mods/APController/Animations/UIController.controller
+- Assets/Mods/APController/Sprites/melee.png
 Dependencies: []

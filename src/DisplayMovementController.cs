@@ -6,56 +6,83 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace QM_DisplayMovementSpeedContinued
+namespace QM_DisplayMovementSpeedContinuedUI
 {
+    [UIView(GameLoopGroup.Dungeon, false, false)]
     public class DisplayMovementController : MonoBehaviour
     {
-        [Header("Manual adjusting")]
-        public Vector3 Adjustment = new Vector3(0f, 0.15f, 0f);
+        public Vector3 adjustment = new Vector3(0f, 0.15f, 0f);
 
-        [Header("Components")]
-        public TextMeshProUGUI APTextObject;
-        public Image AttackTypeImage;
-        public Image HealthBar;
+        public TextMeshProUGUI apTextObject;
+        public Image attackTypeImage;
+        public Image healthBar;
+        public Image lifeRemainingPreviewBar;
+        public Image backgroundBar;
+        public RawImage marks;
 
         [Header("Images")]
-        [SerializeField] private Sprite meleeSprite;
-        [SerializeField] private Sprite rangedSprite;
-        [SerializeField] private Sprite defaultSprite;
+        private Sprite _meleeSprite;
+        private Sprite _rangedSprite;
+        private Sprite _defaultSprite;
 
+        private Monster _lastMonster;
 
-        private Monster lastMonster;
+        private RectTransform _root;
 
-        private RectTransform Root;
+        private RectTransform _canvas;
 
-        private RectTransform Canvas;
+        private Animator _animator;
 
-        public void LoadComponents(string bundleName)
+        private CreatureData _playerData;
+
+        public void Awake()
         {
-            Canvas = this.gameObject.GetComponentInParent<Canvas>().transform as RectTransform;
+            LoadComponents();
+        }
 
-            APTextObject = this.transform.GetComponentInChildren<TextMeshProUGUI>();
+        public void LoadComponents()
+        {
+            _canvas = this.gameObject.GetComponentInParent<Canvas>().transform as RectTransform;
 
-            AttackTypeImage = this.transform.GetComponentsInChildren<Image>()
-                                    .Where(x => x.gameObject.name.Equals("Image", StringComparison.CurrentCultureIgnoreCase))
-                                    .First();
+            apTextObject = this.transform.GetComponentInChildren<TextMeshProUGUI>(true);
 
-            HealthBar = this.transform.GetComponentsInChildren<Image>(true)
-                                    .Where(x => x.gameObject.name.Equals("Fillbar", StringComparison.CurrentCultureIgnoreCase))
-                                    .First();
+            var images = this.transform.GetComponentsInChildren<Image>(true);
 
-            Root = this.transform.GetComponentsInChildren<RectTransform>()
-                                    .Where(x => x.gameObject.name.Equals("Root", StringComparison.CurrentCultureIgnoreCase))
-                                    .First();
+            attackTypeImage = images
+                .First(x => x.gameObject.name.Equals("Image", StringComparison.CurrentCultureIgnoreCase));
+
+            healthBar = images
+                .First(x => x.gameObject.name.Equals("CurrentHealth", StringComparison.CurrentCultureIgnoreCase));
+
+            lifeRemainingPreviewBar = images
+                .First(x => x.gameObject.name.Equals("RemainingHealthPreview", StringComparison.CurrentCultureIgnoreCase));
+
+            backgroundBar = images
+                .First(x => x.gameObject.name.Equals("Healthbar", StringComparison.CurrentCultureIgnoreCase));
+
+            marks = this.transform
+                .GetComponentsInChildren<RawImage>(true)
+                .First(x => x.gameObject.name.StartsWith("Marks", StringComparison.CurrentCultureIgnoreCase));
+
+            _root = this.transform
+                .GetComponentsInChildren<RectTransform>(true)
+                .First(x => x.gameObject.name.Equals("Root", StringComparison.CurrentCultureIgnoreCase));
+
+            healthBar.color = Plugin.Config.CurrentHealthColor;
+            lifeRemainingPreviewBar.color = Plugin.Config.RemainingHealthColor;
+            backgroundBar.color = Plugin.Config.BackgroundHealthColor;
+            marks.color = Plugin.Config.HealthChunkDividerColor;
+
+            _animator = this.GetComponent<Animator>();
 
             var whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 2, 2), Vector2.zero);
             // Use static class to load images for the sprites
-            var sprites = DataLoader.LoadFilesFromBundle<Sprite>(bundleName, new List<string> { "melee", "ranged", "default" });
-            meleeSprite = sprites[0] != null ? sprites[0] : whiteSprite;
-            rangedSprite = sprites[1] != null ? sprites[1] : whiteSprite;
-            defaultSprite = sprites[2] != null ? sprites[2] : whiteSprite;
+            var sprites = DataLoader.LoadFilesFromBundle<Sprite>(Plugin.BundleName, new List<string> { "melee", "ranged", "default" });
+            _meleeSprite = sprites[0] != null ? sprites[0] : whiteSprite;
+            _rangedSprite = sprites[1] != null ? sprites[1] : whiteSprite;
+            _defaultSprite = sprites[2] != null ? sprites[2] : whiteSprite;
 
-            AttackTypeImage.sprite = defaultSprite;
+            attackTypeImage.sprite = _defaultSprite;
         }
 
         public void SetEnemy(Monster monster, Vector3 worldPos, float scaleSize)
@@ -74,12 +101,12 @@ namespace QM_DisplayMovementSpeedContinued
                 // Set object world pos to UI!
                 // Didn't remember about the concese calculation, so:
                 // https://discussions.unity.com/t/how-to-convert-from-world-space-to-canvas-space/117981
-                Vector2 viewPortPos = Camera.main.WorldToViewportPoint(worldPos + Vector3.Scale(Camera.main.transform.up, Adjustment));
-                Vector2 WorldObject_ScreenPosition = new Vector2(
-                            ((viewPortPos.x * Canvas.sizeDelta.x) - (Canvas.sizeDelta.x * 0.5f)),
-                            ((viewPortPos.y * Canvas.sizeDelta.y) - (Canvas.sizeDelta.y * 0.5f)));
+                Vector2 viewPortPos = Camera.main.WorldToViewportPoint(worldPos + Vector3.Scale(Camera.main.transform.up, adjustment));
+                Vector2 worldObjectScreenPosition = new Vector2(
+                            ((viewPortPos.x * _canvas.sizeDelta.x) - (_canvas.sizeDelta.x * 0.5f)),
+                            ((viewPortPos.y * _canvas.sizeDelta.y) - (_canvas.sizeDelta.y * 0.5f)));
                 //viewPortPos += Adjustment;
-                ((RectTransform)transform).anchoredPosition = WorldObject_ScreenPosition;
+                ((RectTransform)transform).anchoredPosition = worldObjectScreenPosition;
 
                 ((RectTransform)transform).localScale = new Vector3(scaleSize, scaleSize, scaleSize);
             }
@@ -88,24 +115,60 @@ namespace QM_DisplayMovementSpeedContinued
                 Debug.LogError($"Camera.main is null, UI not tracking enemy correctly.");
             }
 
-            if (lastMonster == null || monster != lastMonster)
+            if (_lastMonster == null || monster != _lastMonster)
             {
                 AttachToNewMonster(monster);
                 ChangeSprite(monster);
             }
 
-            HealthBar.fillAmount = monster.CreatureData.Health.Percent;
-            APTextObject.text = $"{monster.ActionPoints}";  //$"{monster.ActionPointsLeft}/{monster.ActionPoints}";
+            healthBar.fillAmount = monster.CreatureData.Health.Percent;
+            apTextObject.text = $"{monster.ActionPoints}";
+
+            if (_playerData == null)
+                _playerData = DungeonGameMode.Instance.Creatures.Player.CreatureData;
+
+            var weaponRecord = _playerData.Inventory.CurrentWeapon.Record<WeaponRecord>();
+            var weaponComponent = _playerData.Inventory.CurrentWeapon.Comp<WeaponComponent>();
+
+            if (weaponRecord != null && weaponComponent != null)
+            {
+                DmgInfo damageInfo = weaponComponent.Damage;
+                var damageResist = monster.CreatureData.GetResist(damageInfo.damage);
+
+                float meleeMult = 1f;
+                if (weaponRecord.IsMelee)
+                {
+                    damageInfo += _playerData.MeleeDamage;
+                    damageInfo += _playerData.GetMeleeAddedFlatDamage();
+                    meleeMult = _playerData.OverallMeleeDamageMult(_playerData.Inventory.CurrentWeapon, ignoreFiremode: true);
+                }
+
+                float firemodeMult = (float)weaponComponent.CurrentFireMode.WeaponCastsCount * weaponComponent.CurrentFireMode.DamageMult;
+                float avgDamage = ((float)damageInfo.maxDmg + (float)damageInfo.minDmg) * firemodeMult * meleeMult * 0.5f;
+
+                float maxHealth = (float)monster.CreatureData.Health.MaxValue;
+                float currentHealth = (float)monster.CreatureData.Health._value;
+
+                float remainingAvgHealth = Mathf.Clamp(currentHealth - avgDamage, 0f, maxHealth);
+                float avgPercent = remainingAvgHealth / maxHealth;
+#if DEBUG
+                Debug.Log($"UI Damage Report Aproximation: {avgDamage} {damageInfo.damage} damage with monster having {damageResist}% resistance, totaling {remainingAvgHealth}/{maxHealth} health.\nDisplayed bar is at {avgPercent}%.");
+#endif
+
+                lifeRemainingPreviewBar.fillAmount = avgPercent;
+            }
 
             EnableUI();
         }
 
         public void AttachToNewMonster(Monster newMonster)
         {
-            if (lastMonster != null)
-                lastMonster.CreatureData.Health.Killed -= OnAttachedDead;
+            if (_lastMonster != null)
+                _lastMonster.CreatureData.Health.Killed -= OnAttachedDead;
             newMonster.CreatureData.Health.Killed += OnAttachedDead;
-            lastMonster = newMonster;
+            _lastMonster = newMonster;
+
+            marks.uvRect = new Rect(0, 0, ((float)_lastMonster.CreatureData.Health.MaxValue / (float)Plugin.Config.HealthChunkValue), 1);
         }
 
         private void ChangeSprite(Monster monster)
@@ -124,31 +187,30 @@ namespace QM_DisplayMovementSpeedContinued
                         .Any(y => y?.Record<WeaponRecord>()?.IsMelee == false)
                     );
             }
-            AttackTypeImage.sprite = hasRanged ? rangedSprite : meleeSprite;
-        }
-
-        //private void OnDestroy()
-        //{
-        //    if (lastMonster != null && lastMonster.CreatureData != null) 
-        //        lastMonster.CreatureData.Health.Killed -= OnAttachedDead;
-        //}
-
-        public void DisableUI()
-        {
-            this.Root.gameObject.SetActive(false);
-        }
-
-        private void EnableUI()
-        {
-            this.AttackTypeImage.gameObject.SetActive(Plugin.IsAttackTypeEnabled);
-            this.HealthBar.transform.parent.gameObject.SetActive(Plugin.IsHealthBarEnabled);
-            this.APTextObject.gameObject.SetActive(Plugin.IsActionPointsEnabled);
-            this.Root.gameObject.SetActive(true);
+            attackTypeImage.sprite = hasRanged ? _rangedSprite : _meleeSprite;
         }
 
         private void OnAttachedDead()
         {
             DisableUI();
+        }
+
+        public void DisableUI()
+        {
+            this._root?.gameObject.SetActive(false);
+            _animator?.SetBool("Blink", false);
+        }
+
+        private void EnableUI()
+        {
+            this.attackTypeImage?.gameObject.SetActive(Plugin.Config.EnabledAttackType);
+            this.healthBar?.transform.parent.gameObject.SetActive(Plugin.Config.EnabledHealthBar);
+            this.lifeRemainingPreviewBar.gameObject.SetActive(Plugin.Config.EnableRemainingHealthPreviewBar);
+            this.apTextObject?.gameObject.SetActive(Plugin.Config.EnabledActionPoints);
+            this.marks.enabled = Plugin.Config.HealthChunkEnabled;
+            if (Plugin.Config.HealthBarBlink && Plugin.Config.EnableRemainingHealthPreviewBar)
+                _animator?.SetBool("Blink", true);
+            this._root.gameObject.SetActive(true);
         }
     }
 }

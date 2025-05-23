@@ -2,7 +2,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace QM_DisplayMovementSpeedContinued
+namespace QM_DisplayMovementSpeedContinuedUI
 {
     public static class DataLoader
     {

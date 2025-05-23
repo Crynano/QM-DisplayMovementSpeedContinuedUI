@@ -3,5 +3,11 @@
   "Assemblies": [
     "QM_DisplayMovementSpeedContinuedUI.dll"
   ],
-  "Dependencies": []
+  "Dependencies": [],
+  "SteamTags":
+  [
+    "0.9",
+    "Quality of Life",
+    "UI"
+  ]
 }
