@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace QM_DisplayMovementSpeedContinuedUI
@@ -49,20 +50,20 @@ namespace QM_DisplayMovementSpeedContinuedUI
             }
 
             bool IsMCMOn = false;
+            string mcmConfigPath = string.Empty;
+
             try
             {
-                ModConfigMenuAPI.RegisterModConfig("Display Movement UI [HOVER]", ConfigPath, delegate (Dictionary<string, object> properties)
-                {
-#if DEBUG
-                    Debug.Log("Applying the changes in Display Movement UI [HOVER] mod!");
-#endif
-                    Config.LoadConfig(properties);
-                });
-                IsMCMOn = true;
+                IsMCMOn = RegisterToMCM();
+                mcmConfigPath = GetMCMPath();
             }
-            catch (Exception e) { Debug.LogWarning($"Loading without MCM."); }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"Loading without MCM.");
+                IsMCMOn = false;
+                mcmConfigPath = string.Empty;
+            }
 
-            string mcmConfigPath = ModConfigMenuAPI.GetNameForConfigFile(ConfigPath);
 #if DEBUG
             Debug.Log($"MCM for Display Movement UI [HOVER] report. On? {IsMCMOn}. File Path? {mcmConfigPath}. Exists? {File.Exists(mcmConfigPath)}");
 #endif
@@ -80,6 +81,23 @@ namespace QM_DisplayMovementSpeedContinuedUI
 #endif
                 Config.LoadConfig(ConfigPath);
             }
+        }
+
+        private static bool RegisterToMCM()
+        {
+            ModConfigMenuAPI.RegisterModConfig("Display Movement UI [HOVER]", ConfigPath, delegate (Dictionary<string, object> properties)
+            {
+#if DEBUG
+                    Debug.Log("Applying the changes in Display Movement UI [HOVER] mod!");
+#endif
+                Config.LoadConfig(properties);
+            });
+            return true;
+        }
+
+        private static string GetMCMPath()
+        {
+            return ModConfigMenuAPI.GetNameForConfigFile(ConfigPath);
         }
 
         // New
