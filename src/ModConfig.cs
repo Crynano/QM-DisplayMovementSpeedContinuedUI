@@ -3,26 +3,84 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace QM_DisplayMovementSpeedContinuedUI
 {
     public class ModConfig
     {
+        public bool DebugMode { get; set; } = false;
         public bool EnabledHealthBar { get; set; } = true;
         public bool EnabledAttackType { get; set; } = true;
+        public bool EnabledDamageType { get; set; } = true;
         public bool EnabledActionPoints { get; set; } = true;
+        public bool EnabledNumericHealth { get; set; } = true;
         public bool HealthBarBlink { get; set; } = true;
+        public float HealthBarBlinkSpeed { get; set; } = 2f;
         public bool EnableRemainingHealthPreviewBar { get; set; } = true;
-        public Color CurrentHealthColor { get; set; }
-        public Color RemainingHealthColor { get; set; }
-        public Color BackgroundHealthColor { get; set; }
+        
+        //public Color BackgroundHealthColor { get; set; } = Color.black; // WONT BE USED.
         public bool HealthChunkEnabled { get; set; } = true;
         public int HealthChunkValue { get; set; } = 20;
-        public Color HealthChunkDividerColor { get; set; }
 
-        public void LoadConfig(string configPath)
+        [JsonProperty("CurrentHealthColor")]
+        private string _currentHealthColor;
+        [JsonProperty("RemainingHealthColor")]
+        private string _remainingHealthColor;
+        [JsonProperty("HealthChunkDividerColor")]
+        private string _healthChunkDividerColor;
+
+        [JsonIgnore]
+        public Color CurrentHealthColor
         {
+            get
+            {
+                ColorUtility.TryParseHtmlString($"#{_currentHealthColor}", out Color result);
+                return result;
+            }
+            set => _currentHealthColor = ColorUtility.ToHtmlStringRGBA(value);
+        }
+
+        [JsonIgnore]
+        public Color RemainingHealthColor
+        {
+            get
+            {
+                ColorUtility.TryParseHtmlString($"#{_remainingHealthColor}", out Color result);
+                return result;
+            }
+            set => _remainingHealthColor = ColorUtility.ToHtmlStringRGBA(value);
+        }
+        
+        [JsonIgnore]public Color HealthChunkDividerColor
+        {
+            get
+            {
+                ColorUtility.TryParseHtmlString($"#{_healthChunkDividerColor}", out Color result);
+                return result;
+            }
+            set => _healthChunkDividerColor = ColorUtility.ToHtmlStringRGBA(value);
+        }
+       
+
+        // [NonSerialized] [JsonIgnore] private static readonly JsonSerializerSettings _options = new JsonSerializerSettings()
+        // {
+        //     Formatting = Formatting.Indented,
+        //     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        // };
+
+        public ModConfig()
+        {
+            CurrentHealthColor = Color.red;
+            ColorUtility.TryParseHtmlString("#FFA600", out var remainingNewColor);
+            RemainingHealthColor = remainingNewColor;
+            HealthChunkDividerColor = Color.white;
+        }
+
+        public ModConfig LoadFromIniConfig(string configPath)
+        {
+            ModConfig finalModConfig = new ModConfig();
             if (File.Exists(configPath))
             {
                 var sourceLines = File.ReadAllLines(configPath);
@@ -38,29 +96,62 @@ namespace QM_DisplayMovementSpeedContinuedUI
                         string key = keyValue[0].Trim();
                         string value = keyValue[1].Trim();
                         var convertedValue = ConvertValue(value);
-                        PropertyInfo propertyInfo = this.GetType().GetProperty(key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-                        propertyInfo?.SetValue(this, convertedValue, null);
+                        PropertyInfo propertyInfo = this.GetType().GetProperty(key,
+                            BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                        propertyInfo?.SetValue(finalModConfig, convertedValue, null);
 #if DEBUG
-                        Debug.Log($"Tried to set property of {propertyInfo?.Name} as {propertyInfo?.PropertyType} against {key} with value {convertedValue} of type {convertedValue.GetType()}");
+                        Debug.Log(
+                            $"Tried to set property of {propertyInfo?.Name} as {propertyInfo?.PropertyType} against {key} with value {convertedValue} of type {convertedValue.GetType()}");
 #endif
                     }
                 }
             }
+            else
+            {
+                return null;
+            }
+
+            return finalModConfig;
+        }
+
+        public static ModConfig LoadConfigJson(string configPath)
+        {
+            return File.Exists(configPath)
+                ? JsonConvert.DeserializeObject<ModConfig>(File.ReadAllText(configPath))
+                : new ModConfig();
+        }
+
+        public void SaveConfigJson(string configPath)
+        {
+            Logger.LogDebug("SaveConfigJson(): Saving config...");
+            var data = Newtonsoft.Json.JsonConvert.SerializeObject(this, Formatting.Indented);
+            Logger.LogDebug("SaveConfigJson(): Object is serialized");
+            File.WriteAllText(configPath, data);
+            Logger.LogDebug("SaveConfigJson(): Saved config");
         }
 
         public void LoadConfig(Dictionary<string, object> propertiesDictionary)
         {
+            Logger.LogDebug("Loading config");
             foreach (var nameValuePair in propertiesDictionary)
             {
-                PropertyInfo propertyInfo = this.GetType().GetProperty(nameValuePair.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-#if DEBUG
-                if (propertyInfo == null) { Debug.LogWarning($"[MORE STACK SIZE] Property {nameValuePair.Key} not found"); continue; }
-#endif
-                propertyInfo?.SetValue(this, Convert.ChangeType(nameValuePair.Value, propertyInfo.PropertyType), null);
-#if DEBUG
-                Debug.Log($"Tried to set property of {propertyInfo?.Name} as {propertyInfo?.PropertyType} against {nameValuePair.Key} with value {nameValuePair.Value} of type {propertyInfo?.PropertyType}");
-#endif
+                Logger.LogDebug($"Loading info property {nameValuePair.Key} with value {nameValuePair.Value}");
+                try
+                {
+                    PropertyInfo propertyInfo = this.GetType().GetProperty(nameValuePair.Key,
+                        BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+                    Logger.LogDebug($"Does property exist? {propertyInfo != null}");
+                    Logger.LogDebug($"Loading property named {nameValuePair.Key} with value {nameValuePair.Value} of type {propertyInfo?.PropertyType}");
+                    propertyInfo?.SetValue(this, nameValuePair.Value,
+                        null);
+                    Logger.LogDebug("Post assignment debug.");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e.Message);
+                }
             }
+            Logger.LogDebug("LoadConfig(): Finished loading properties into memory!");
         }
 
         private object ConvertValue(string value)

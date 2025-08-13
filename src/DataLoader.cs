@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using JetBrains.Annotations;
 using UnityEngine;
 
 namespace QM_DisplayMovementSpeedContinuedUI
@@ -36,6 +38,45 @@ namespace QM_DisplayMovementSpeedContinuedUI
             }
             loadedBundle.Unload(false);
             return loadedAssets;
+        }
+
+        public static IEnumerable<T> LoadFilesFromMemory<T>(string resourceName, List<string> fileNames) where T : class
+        {
+            List<T> result = new List<T>();
+            foreach (var fileName in fileNames)
+            {
+                result.Add(LoadFileFromMemory<T>(resourceName, fileName));
+            }
+            return result;
+        }
+        
+        public static T LoadFileFromMemory<T>(string resourceName, string fileName) where T : class
+        {
+            if (string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(resourceName))
+            {
+                return null;
+            }
+
+            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+
+            if (stream == null)
+            {
+                Logger.LogError("ASSETBUNDLE COULD NOT BE LOADED");
+                return null;
+            }
+
+            AssetBundle loadedBundle = AssetBundle.LoadFromStream(stream);
+            var loadedAsset = loadedBundle.LoadAsset(fileName, typeof(T)) as T;
+            loadedBundle.Unload(false);
+
+            stream.Position = 0;
+
+            if (loadedAsset != null)
+            {
+                //Logger.LogInfo($"Loaded asset correctly! Returning {loadedAsset.GetType()}");
+                return loadedAsset;
+            }
+            return null;
         }
     }
 }
