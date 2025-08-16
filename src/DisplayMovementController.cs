@@ -11,18 +11,6 @@ namespace QM_DisplayMovementSpeedContinuedUI
     [UIView(GameLoopGroup.Dungeon, false, false)]
     public class DisplayMovementController : MonoBehaviour
     {
-        private static readonly int DamagedHealthbarColor = Shader.PropertyToID("_DamagedHealthbarColor");
-        private static readonly int CurrentHealthbarColor = Shader.PropertyToID("_CurrentHealthbarColor");
-        private static readonly int EnableCurrentHealthBlink = Shader.PropertyToID("_EnableCurrentHealthBlink");
-        private static readonly int CurrentHealthBlinkingSpeed = Shader.PropertyToID("_CurrentHealthBlinkingSpeed");
-        private static readonly int ChunkColor = Shader.PropertyToID("_ChunkColor");
-        private static readonly int CurrentHealthPercent = Shader.PropertyToID("_CurrentHealthPercent");
-        private static readonly int DamagedHealthPercent = Shader.PropertyToID("_DamagedHealthPercent");
-        private static readonly int ChunkAmount = Shader.PropertyToID("_ChunkAmount");
-        private static readonly int CurrentHealthBlink = Shader.PropertyToID("_EnableCurrentHealthBlink");
-        private static readonly int EnableChunk = Shader.PropertyToID("_EnableChunk");
-        private static readonly int EnableDamagePreview = Shader.PropertyToID("_EnableDamagePreview");
-
         public Vector3 adjustment = new Vector3(0f, 0.15f, 0f);
 
         public TextMeshProUGUI apTextObject;
@@ -49,11 +37,12 @@ namespace QM_DisplayMovementSpeedContinuedUI
         private List<string> _damageTypes = new List<string>
             { "blunt", "pierce", "lacer", "fire", "cold", "poison", "shock", "beam" };
 
-        public void Awake()
-        {
-            LoadComponents();
-        }
+        // public void Awake()
+        // {
+        //     LoadComponents();
+        // }
 
+        // Call LoadComponents after its created. Awake just creates a lag spike when user first enables it.
         public void LoadComponents()
         {
             _canvas = this.gameObject.GetComponentInParent<Canvas>(true).transform as RectTransform;
@@ -75,11 +64,11 @@ namespace QM_DisplayMovementSpeedContinuedUI
             // Set all material colors here.
             // Grab the material from the healthbar image
             hpMaterial = healthBar.material;
-            hpMaterial.SetColor(CurrentHealthbarColor, Plugin.Config.CurrentHealthColor);
-            hpMaterial.SetColor(DamagedHealthbarColor, Plugin.Config.RemainingHealthColor);
-            hpMaterial.SetColor(ChunkColor, Plugin.Config.HealthChunkDividerColor);
-            hpMaterial.SetInt(EnableCurrentHealthBlink, Plugin.Config.HealthBarBlink ? 1 : 0);
-            hpMaterial.SetFloat(CurrentHealthBlinkingSpeed, Plugin.Config.HealthBarBlinkSpeed);
+            hpMaterial.SetColor(Plugin.CurrentHealthbarColor, Plugin.Config.CurrentHealthColor);
+            hpMaterial.SetColor(Plugin.DamagedHealthbarColor, Plugin.Config.RemainingHealthColor);
+            hpMaterial.SetColor(Plugin.ChunkColor, Plugin.Config.HealthChunkDividerColor);
+            hpMaterial.SetInt(Plugin.EnableCurrentHealthBlink, Plugin.Config.HealthBarBlink ? 1 : 0);
+            hpMaterial.SetFloat(Plugin.CurrentHealthBlinkingSpeed, Plugin.Config.HealthBarBlinkSpeed);
 
             healthBar.SetMaterialDirty();
 
@@ -87,26 +76,24 @@ namespace QM_DisplayMovementSpeedContinuedUI
             var whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 2, 2), Vector2.zero);
 
             // Use static class to load images for the sprites
-            var sprites = DataLoader
-                .LoadFilesFromMemory<Sprite>(Plugin.BundleName, new List<string> { "melee", "ranged", "default" })
-                .ToList();
+            var spriteResourcesList = new List<string> { "melee", "ranged", "default" };
+            spriteResourcesList.AddRange(_damageTypes);
+            
+            // We reduce the call from 2 to 1. More efficient way. We recover all sprites at once.
+            var sprites = DataLoader.LoadFilesFromMemory<Sprite>(Plugin.BundleName, spriteResourcesList).ToList();
             _meleeSprite = sprites[0] != null ? sprites[0] : whiteSprite;
             _rangedSprite = sprites[1] != null ? sprites[1] : whiteSprite;
             _defaultSprite = sprites[2] != null ? sprites[2] : whiteSprite;
-
-            var damageSprites = DataLoader.LoadFilesFromMemory<Sprite>(Plugin.BundleName, _damageTypes).ToList();
+            
             DamageSprites = new Dictionary<string, Sprite>();
 
             //Populate dictionary
-            for (int i = 0; i < damageSprites.Count; i++)
+            for (int i = 3; i < sprites.Count; i++)
             {
-                DamageSprites.Add(_damageTypes[i], damageSprites[i]);
+                DamageSprites.Add(_damageTypes[i-3], sprites[i]);
             }
 
             attackTypeImage.sprite = _defaultSprite;
-
-            
-
             this.gameObject.SetActive(false);
         }
 
@@ -155,7 +142,7 @@ namespace QM_DisplayMovementSpeedContinuedUI
             
             ChangeSprite(monster);
 
-            hpMaterial.SetFloat(CurrentHealthPercent, monster.CreatureData.Health.Percent);
+            hpMaterial.SetFloat(Plugin.CurrentHealthPercent, monster.CreatureData.Health.Percent);
             apTextObject.text = $"{monster.ActionPoints}";
             numericHealthText.text = $"{monster.CreatureData.Health.Value}/{monster.CreatureData.Health.MaxValue}";
 
@@ -192,7 +179,7 @@ namespace QM_DisplayMovementSpeedContinuedUI
                 Logger.LogDebug(
                     $"SetEnemy(): Damage Approximation: {avgDamage} avg. {damageInfo.damage} damage with monster having {damageResist}% resistance, totaling {remainingAvgHealth}/{maxHealth} health.\nDisplayed bar is at {avgPercent}%.");
                 
-                hpMaterial.SetFloat(DamagedHealthPercent, avgPercent);
+                hpMaterial.SetFloat(Plugin.DamagedHealthPercent, avgPercent);
             }
             else
             {
@@ -211,7 +198,7 @@ namespace QM_DisplayMovementSpeedContinuedUI
             newMonster.CreatureData.Health.Killed += OnAttachedDead;
             _lastMonster = newMonster;
 
-            healthBar.material.SetFloat(ChunkAmount,
+            healthBar.material.SetFloat(Plugin.ChunkAmount,
                 (float)_lastMonster.CreatureData.Health.MaxValue / (float)Plugin.Config.HealthChunkValue);
             healthBar.SetMaterialDirty();
         }
@@ -231,7 +218,9 @@ namespace QM_DisplayMovementSpeedContinuedUI
 
             // Now we check the damage of the weapon.
             var currentDamageType =
-                inventory.CurrentWeapon.Comp<WeaponComponent>().CurrentAmmoType.DmgType ?? string.Empty;
+                inventory.CurrentWeapon.Comp<WeaponComponent>().Damage.damage ??
+                inventory.CurrentWeapon.Comp<WeaponComponent>().CurrentAmmoType.DmgType ??
+                string.Empty;
             DamageSprites.TryGetValue(currentDamageType, out var sprite);
             if (sprite != null)
             {
@@ -240,7 +229,7 @@ namespace QM_DisplayMovementSpeedContinuedUI
             }
             else
             {
-                Logger.LogDebug($"ChangeSprite(): Sprite named {currentDamageType} not found in sprites dictionary.");
+                Logger.LogError($"ChangeSprite(): Sprite named {currentDamageType} not found in sprites dictionary. Weapon was {inventory.CurrentWeapon.Id}");
             }
         }
 
@@ -262,9 +251,9 @@ namespace QM_DisplayMovementSpeedContinuedUI
             this.numericHealthText?.gameObject.SetActive(Plugin.Config.EnabledNumericHealth);
             this.healthBar?.transform.parent.gameObject.SetActive(Plugin.Config.EnabledHealthBar);
 
-            hpMaterial.SetFloat(EnableDamagePreview, Plugin.Config.EnableRemainingHealthPreviewBar ? 1 : 0);
-            hpMaterial.SetFloat(EnableChunk, Plugin.Config.HealthChunkEnabled ? 1 : 0);
-            hpMaterial.SetFloat(CurrentHealthBlink, Plugin.Config.HealthBarBlink && Plugin.Config.EnableRemainingHealthPreviewBar ? 1 : 0);
+            hpMaterial.SetFloat(Plugin.EnableDamagePreview, Plugin.Config.EnableRemainingHealthPreviewBar ? 1 : 0);
+            hpMaterial.SetFloat(Plugin.EnableChunk, Plugin.Config.HealthChunkEnabled ? 1 : 0);
+            hpMaterial.SetFloat(Plugin.CurrentHealthBlink, Plugin.Config.HealthBarBlink && Plugin.Config.EnableRemainingHealthPreviewBar ? 1 : 0);
             healthBar?.SetMaterialDirty();
 
             this.gameObject.SetActive(true);

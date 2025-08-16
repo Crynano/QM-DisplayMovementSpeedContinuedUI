@@ -4,6 +4,7 @@ using ModConfigMenu;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using ModConfigMenu.Objects;
 using UnityEngine;
@@ -30,6 +31,20 @@ namespace QM_DisplayMovementSpeedContinuedUI
         
         // Camera related
         private static int _perfectPPU = 78;
+        
+        #region Shader Properties
+        public static readonly int DamagedHealthbarColor = Shader.PropertyToID("_DamagedHealthbarColor");
+        public static readonly int CurrentHealthbarColor = Shader.PropertyToID("_CurrentHealthbarColor");
+        public static readonly int EnableCurrentHealthBlink = Shader.PropertyToID("_EnableCurrentHealthBlink");
+        public static readonly int CurrentHealthBlinkingSpeed = Shader.PropertyToID("_CurrentHealthBlinkingSpeed");
+        public static readonly int ChunkColor = Shader.PropertyToID("_ChunkColor");
+        public static readonly int CurrentHealthPercent = Shader.PropertyToID("_CurrentHealthPercent");
+        public static readonly int DamagedHealthPercent = Shader.PropertyToID("_DamagedHealthPercent");
+        public static readonly int ChunkAmount = Shader.PropertyToID("_ChunkAmount");
+        public static readonly int CurrentHealthBlink = Shader.PropertyToID("_EnableCurrentHealthBlink");
+        public static readonly int EnableChunk = Shader.PropertyToID("_EnableChunk");
+        public static readonly int EnableDamagePreview = Shader.PropertyToID("_EnableDamagePreview");
+#endregion
 
         #region MGSC Hooks
 
@@ -133,7 +148,8 @@ namespace QM_DisplayMovementSpeedContinuedUI
         public static void SpawnUI(IModContext context)
         {
             _controller = UI.Get<DisplayMovementController>();
-            _gameCamera = GameObject.FindObjectOfType<UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera>();
+            _controller.LoadComponents();
+            _gameCamera = GameObject.FindObjectOfType<PixelPerfectCamera>();
         }
 
         [Hook(ModHookType.ResourcesLoad)]

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -40,19 +41,14 @@ namespace QM_DisplayMovementSpeedContinuedUI
             return loadedAssets;
         }
 
-        public static IEnumerable<T> LoadFilesFromMemory<T>(string resourceName, List<string> fileNames) where T : class
-        {
-            List<T> result = new List<T>();
-            foreach (var fileName in fileNames)
-            {
-                result.Add(LoadFileFromMemory<T>(resourceName, fileName));
-            }
-            return result;
-        }
-        
         public static T LoadFileFromMemory<T>(string resourceName, string fileName) where T : class
         {
-            if (string.IsNullOrEmpty(fileName) || string.IsNullOrEmpty(resourceName))
+            return LoadFilesFromMemory<T>(resourceName, new List<string>() {fileName}).ToList()[0];
+        }
+        
+        public static IEnumerable<T> LoadFilesFromMemory<T>(string resourceName, List<string> fileNames) where T : class
+        {
+            if (string.IsNullOrEmpty(resourceName) || fileNames == null || fileNames.Count < 1)
             {
                 return null;
             }
@@ -64,19 +60,24 @@ namespace QM_DisplayMovementSpeedContinuedUI
                 Logger.LogError("ASSETBUNDLE COULD NOT BE LOADED");
                 return null;
             }
-
+            
+            //foreach
             AssetBundle loadedBundle = AssetBundle.LoadFromStream(stream);
-            var loadedAsset = loadedBundle.LoadAsset(fileName, typeof(T)) as T;
+            var result = new List<T>();
+            
+            // Optimize asset recovery by only opening/closing bundle once not N.
+            foreach (var singleAsset in fileNames)
+            {
+                if (loadedBundle.LoadAsset(singleAsset, typeof(T)) is T loadedAsset)
+                {
+                    result.Add(loadedAsset);
+                }
+            }
+            
             loadedBundle.Unload(false);
 
             stream.Position = 0;
-
-            if (loadedAsset != null)
-            {
-                //Logger.LogInfo($"Loaded asset correctly! Returning {loadedAsset.GetType()}");
-                return loadedAsset;
-            }
-            return null;
+            return result;
         }
     }
 }
