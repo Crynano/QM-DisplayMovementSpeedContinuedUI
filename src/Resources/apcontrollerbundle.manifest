@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 2260504709
+CRC: 4147411154
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 5d8b3eaddc32800b2cfcd8774f7af8aa
+    Hash: 282801c562e4438dd3abfdc52e2adafa
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fe3e8e949e0efe426ded29b202621a47
+    Hash: 04f91d546092b83a175db5731e883c65
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 5d8b3eaddc32800b2cfcd8774f7af8aa
+    Hash: 282801c562e4438dd3abfdc52e2adafa
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -20,24 +20,12 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 48
   Script: {instanceID: 0}
-- Class: 74
-  Script: {instanceID: 0}
-- Class: 91
-  Script: {instanceID: 0}
-- Class: 95
-  Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-- Class: 114
-  Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -76,19 +64,28 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
-- Assets/Font/MinecraftRegular-Bmg3 SDF.asset
 - Assets/Mods/APController/Sprites/ranged.png
+- Assets/Mods/APController/Sprites/cold.png
+- Assets/Mods/APController/Sprites/pierce.png
 - Assets/TextMesh Pro/Shaders/TMP_SDF.shader
-- Assets/Mods/APController/Animations/HealthBarBlink.anim
-- Assets/Mods/APController/Animations/HealthBarStatic.anim
-- Assets/Sprite/cnd_filled.asset
-- Assets/Texture2D/cnd_filled.png
-- Assets/Mods/APController/Sprites/Marks.png
+- Assets/Mods/APController/Sprites/fire.png
 - Assets/Font/MinecraftRegular-Bmg3.otf
 - Assets/Mods/APController/Prefabs/ControllerPrefab.prefab
+- Assets/Mods/APController/Sprites/shock.png
 - Assets/Mods/APController/Sprites/default.png
-- Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
+- Assets/Mods/APController/Sprites/blunt.png
+- Assets/Mods/APController/Sprites/beam.png
+- Assets/Mods/APController/Sprites/poison.png
+- Assets/Font/P_DOS_Modded.asset
+- Assets/Mods/APController/Sprites/lacer.png
+- Assets/Mods/APController/Shader/GreenReplaceShader.shadergraph
 - Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Text Component Icon.psd
-- Assets/Mods/APController/Animations/UIController.controller
+- Assets/Font/AP Text.asset
+- Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
+- Assets/Font/PerfectDOSVGA437.ttf
+- Assets/Mods/APController/Shader/Outline.shadersubgraph
+- Assets/Mods/APController/Shader/SegmentedHealthBar.shadergraph
 - Assets/Mods/APController/Sprites/melee.png
+- Assets/Mods/APController/Materials/SegmentedHealthMaterial.mat
+- Assets/Mods/APController/Shader/Shader Graphs_GreenReplaceShader 1.mat
 Dependencies: []

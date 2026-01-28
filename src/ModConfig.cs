@@ -24,13 +24,15 @@ namespace QM_DisplayMovementSpeedContinuedUI
         public bool HealthChunkEnabled { get; set; } = true;
         public int HealthChunkValue { get; set; } = 20;
 
-        [JsonProperty("CurrentHealthColor")]
-        private string _currentHealthColor;
         [JsonProperty("RemainingHealthColor")]
         private string _remainingHealthColor;
         [JsonProperty("HealthChunkDividerColor")]
         private string _healthChunkDividerColor;
 
+        
+        [JsonProperty("CurrentHealthColor")]
+        private string _currentHealthColor;
+        
         [JsonIgnore]
         public Color CurrentHealthColor
         {
