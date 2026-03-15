@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 1510398689
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: apcontrollerbundle
+      Dependencies: {}

@@ -1,193 +1,223 @@
 ﻿using HarmonyLib;
 using MGSC;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Reflection;
-using TMPro;
-using System.IO;
+using ModConfigMenu.Contracts;
+using ModConfigMenu.Implementations;
+using ModConfigMenu.Objects;
 using System;
-
-using TinyJson;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-namespace QM_DisplayMovementSpeedContinued
-{
-    public class Plugin
-    {
-        public const string MoveSpeedTextId = "movementSpeedText";
-        public static KeyCode toggleKey = KeyCode.Comma;
-        public static bool show = true;
+using System.Reflection;
+using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
+using static ModConfigMenu.ModConfigMenuAPI;
 
-        public static ConfigDirectories ModDirectories = new ConfigDirectories();
+namespace QM_DisplayMovementSpeedContinuedUI
+{
+    public static class Plugin
+    {
+        public static ModConfig Config { get; private set; }
+
+        private const string GLOBAL_HEADER = "Global";
+        private const string HEALTHBAR_HEADER = "Health Bar";
+
+        private static DisplayMovementController _controller;
+        private static Pooler _uiPool;
+
+        private static PixelPerfectCamera GameCamera;
+        private static readonly int _perfectPPU = 78;
+        public static Vector3 ScaleSize
+        {
+            get
+            {
+                if (GameCamera == null)
+                    return Vector3.one;
+
+                float scale = (float)GameCamera.assetsPPU / _perfectPPU;
+                return new Vector3(scale, scale, scale);
+            }
+        }
+
+        public static string RootFolder => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private static string ModAssemblyName => Assembly.GetExecutingAssembly().GetName().Name;
+        private static string ModPersistenceFolder =>
+            Path.Combine($"{Application.persistentDataPath}/../Quasimorph_ModConfigs", ModAssemblyName);
+
+        private static string ConfigPath => Path.Combine(ModPersistenceFolder, "config.json");
+        public static readonly string BundleName = "QM_DisplayMovementSpeedContinuedUI.Resources.apcontrollerbundle";
+
+        #region Shader Properties
+        public static readonly int DamagedHealthbarColor = Shader.PropertyToID("_DamagedHealthbarColor");
+        public static readonly int CurrentHealthbarColor = Shader.PropertyToID("_CurrentHealthbarColor");
+        public static readonly int EnableCurrentHealthBlink = Shader.PropertyToID("_EnableCurrentHealthBlink");
+        public static readonly int CurrentHealthBlinkingSpeed = Shader.PropertyToID("_CurrentHealthBlinkingSpeed");
+        public static readonly int ChunkColor = Shader.PropertyToID("_ChunkColor");
+        public static readonly int CurrentHealthPercent = Shader.PropertyToID("_CurrentHealthPercent");
+        public static readonly int DamagedHealthPercent = Shader.PropertyToID("_DamagedHealthPercent");
+        public static readonly int ChunkAmount = Shader.PropertyToID("_ChunkAmount");
+        public static readonly int CurrentHealthBlink = Shader.PropertyToID("_EnableCurrentHealthBlink");
+        public static readonly int EnableChunk = Shader.PropertyToID("_EnableChunk");
+        public static readonly int EnableDamagePreview = Shader.PropertyToID("_EnableDamagePreview");
+        #endregion
+
+        #region MGSC Hooks
 
         [Hook(ModHookType.AfterBootstrap)]
         public static void Bootstrap(IModContext context)
         {
-            string configPath = ModDirectories.ConfigPath;
-
-
-            // thanks NBK_redspy, i just looked at your code because i had no idea how to do this
-            // From NBK_RedSpy:  You are welcome ;)
-            if (File.Exists(configPath))
-            {
-                try
-                {
-                    string fileJson = File.ReadAllText(configPath);
-                    Dictionary<string, string> values = fileJson.FromJson<Dictionary<string, string>>();
-                    toggleKey = (KeyCode)Enum.Parse(typeof(KeyCode), values["toggleKey"]);
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log("DisplayMovementSpeed: Error reading config file");
-                    Debug.LogException(ex);
-                }
-            }
-            else
-            {
-                try
-                {
-
-                    Directory.CreateDirectory(ModDirectories.ModPersistenceFolder);
-
-                    var text = "{\"toggleKey\":\"Comma\"}";
-                    File.WriteAllText(configPath, text);
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log("DisplayMovementSpeed: Error writing to config");
-                    Debug.LogException(ex);
-                }
-            }
-
-            // Plugin startup logic
-            var harmony = new Harmony("QM_DisplayMovementSpeedContinued");
+            var harmony = new Harmony("Crynano_DisplayMovementSpeedContinuedUI");
             harmony.PatchAll();
         }
 
-        [Hook(ModHookType.DungeonUpdateBeforeGameLoop)]
-        public static void DungeonUpdateBeforeGameLoop(IModContext context)
+        [Hook(ModHookType.AfterConfigsLoaded)]
+        public static void AfterConfig(IModContext context)
         {
-            if (InputHelper.GetKeyDown(toggleKey))
-            {
-                show = !show;
-            }
+            Directory.CreateDirectory(ModPersistenceFolder);
 
+            Config = ModConfig.LoadConfigJson(ConfigPath);
+
+            if (!File.Exists(ConfigPath))
+                Config.SaveConfigJson(ConfigPath);
+
+            // Work with newModConfig from now on
+            List<IConfigValue> configValues = new List<IConfigValue>()
+            {
+                new DropdownConfig("UIMode", Config.UIMode.ToString(), GLOBAL_HEADER, "OnlyWhenFocused",
+                    "Configure display mode for UI.",
+                    "UI Mode",
+                    Enum.GetNames(typeof(ModConfig.UiMode)).ToList<object>()),
+
+                new ConfigValue("EnabledAttackType", Config.EnabledAttackType, GLOBAL_HEADER, true,
+                    "Toggle the attack type (melee/ranged) icon", "Enable Attack Icon"),
+
+                new ConfigValue("EnabledDamageType", Config.EnabledDamageType, GLOBAL_HEADER, true,
+                    "Toggle the icon showing the enemy's weapon damage type. (Blunt, Fire, Cold, etc.)", "Enable Damage Type Icon"),
+
+                new ConfigValue("EnabledActionPoints", Config.EnabledActionPoints, GLOBAL_HEADER, true,
+                    "Toggle the numeric action points (AP) display", "Enable Action Points Display"),
+
+                new ConfigValue("EnabledNumericHealth", Config.EnabledNumericHealth, GLOBAL_HEADER, false,
+                    "Toggle the text displaying the numeric health.", "Enable Numeric Health Display"),
+
+                new ConfigValue("EnabledHealthBar", Config.EnabledHealthBar, HEALTHBAR_HEADER, true,
+                    "Toggle the healthbar on the UI", "Enable Health Bar"),
+
+                new ConfigValue("EnableRemainingHealthPreviewBar", Config.EnableRemainingHealthPreviewBar, HEALTHBAR_HEADER,
+                    true,
+                    "Toggles a bar that displays the average damage you would deal to that unit.",
+                    "Enable Damage Preview Bar"),
+
+                new ConfigValue("HealthBarBlink", Config.HealthBarBlink, HEALTHBAR_HEADER, true,
+                    "Toggle the health bar blink.", "Enable Health Bar Blink"),
+
+                new RangeConfig<float>("HealthBarBlinkSpeed", Config.HealthBarBlinkSpeed,
+                    header:HEALTHBAR_HEADER,
+                    min : 0.5f, max : 10f, defaultValue : 2f,
+                    tooltip:"Sets the health bar blinking speed.",
+                    label: "Blinking Speed"),
+
+                new ConfigValue("CurrentHealthColor", Config.CurrentHealthColor, HEALTHBAR_HEADER, Color.red,
+                    "Color for the current amount of health a unit has.", "Current Health Color"),
+
+                new ConfigValue("RemainingHealthColor", Config.RemainingHealthColor, HEALTHBAR_HEADER, Color.yellow,
+                    "Color for the amount of health the unit would have after an average hit from your merc.",
+                    "Remaining Health Color"),
+
+                new ConfigValue("HealthChunkEnabled", Config.HealthChunkEnabled, "Dividers", true,
+                    "Toggles the health dividers overlaying the health bar.", "Enable Health Chunk Divider"),
+
+                new ConfigValue("HealthChunkValue", Config.HealthChunkValue,
+                    header: "Dividers", min: 5, max: 50, defaultValue: 20, label: "Health Chunk Divider Value",
+                    tooltip: "How much health a chunk represents."),
+
+                new ConfigValue("HealthChunkDividerColor", Config.HealthChunkDividerColor, "Dividers", Color.white,
+                    "Color for the chunk divider.",
+                    "Chunk Divider Color"),
+
+                new ConfigValue("DebugMode", Config.DebugMode, "Debug", false,
+                    "Toggles debug messages.", "Toggle debug mode"),
+            };
+
+            RegisterModConfig("Display Movement Speed UI", configValues, ConfigChangedCallback);
         }
 
-        public static void createText(Monster __instance)
+        private static bool ConfigChangedCallback(Dictionary<string, object> config, out string message)
         {
-            
-            GameObject monsterGameObject = __instance.Creature3dView.gameObject;
-
-            if (monsterGameObject.GetComponent<HideTextMesh>() != null)
+            try
             {
+                message = "All good";
+                Config.LoadConfig(config);
+                Config.SaveConfigJson(ConfigPath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return false;
+            }
+        }
+
+        [Hook(ModHookType.DungeonStarted)]
+        public static void SpawnUI(IModContext context)
+        {
+            _controller = UI.Get<DisplayMovementController>();
+
+            GameCamera = GameObject.FindObjectOfType<PixelPerfectCamera>();
+
+            var poolObject = new GameObject("DisplayMovementUIPool");
+            poolObject.transform.SetParent(_controller.transform.parent.transform.parent);
+
+            _uiPool = poolObject.AddComponent<Pooler>();
+            _uiPool.Initialize(_controller.gameObject, _controller.transform.parent);
+        }
+
+        [Hook(ModHookType.ResourcesLoad)]
+        public static object ResourcesLoad(string path)
+        {
+            if (path.Contains(nameof(DisplayMovementController)))
+            {
+                var pref = DataLoader.LoadFileFromMemory<GameObject>(BundleName, "ControllerPrefab");
+                pref.AddComponent<DisplayMovementController>();
+                Logger.LogDebug($"Loaded DisplayMovementController prefab from bundle.");
+                return pref;
+            }
+            return null;
+        }
+
+        #endregion
+
+        public static void UpdateMonsterUI(Monster monster)
+        {
+            if (GameCamera == null)
+            {
+                Logger.LogWarning($"Game camera not found.");
                 return;
             }
 
-            GameObject textGameObject = new GameObject(MoveSpeedTextId);
-
-            textGameObject.transform.SetParent(monsterGameObject.transform);
-            textGameObject.transform.localPosition = new Vector3(0.1f, 0.1f, -1);
-
-            textGameObject.AddComponent(typeof(TextMeshPro));
-
-            TextMeshPro text = textGameObject.GetComponent<TextMeshPro>();
-
-            text.text = GetLabelText(__instance);
-            text.fontSize = 1f;
-            text.fontStyle = FontStyles.Bold;
-            text.lineSpacing = 1;
-            text.alignment = TMPro.TextAlignmentOptions.Center;
-            text.color = Color.white;
-            text.outlineColor = Color.black;
-            text.outlineWidth = 0.3f;
-
-            HideTextMesh hider = __instance.Creature3dView.gameObject.AddComponent<HideTextMesh>();
-        }
-
-        public static void UpdateText(Monster __instance)
-        {
-            //After taking damage, update the label in case the enemy lost their weapon due to amputation.
-            Component moveComponent = __instance.Creature3dView.gameObject.GetComponentsInChildren(typeof(TMPro.TextMeshPro))
-                .ToList()
-                .SingleOrDefault(x => x.name == Plugin.MoveSpeedTextId);
-
-            TextMeshPro label = moveComponent?.GetComponent<TextMeshPro>();
-
-            if (label != null)
+            if (_uiPool != null)
             {
-                label.text = Plugin.GetLabelText(__instance);
+                var pooledController = _uiPool.GetController(monster);
+                pooledController.SetEnemy(monster);
             }
         }
-        public static string GetLabelText(Monster monster)
+
+        public static void ReleaseMonsterUI(Creature monster)
         {
-            Inventory inventory = monster.CreatureData.Inventory;
+            _uiPool?.ReturnController(monster);
+        }
 
-            bool hasRanged = false;
+        public static Pooler GetUIPool()
+        {
+            return _uiPool;
+        }
 
-            List<string> weaponsList = new List<string>();
-
-            if (inventory != null)
+        public static void SetEnemyFocus(Monster monster)
+        {
+            var controller = GetUIPool().GetController(monster);
+            if (controller != null)
             {
-                //Assuming that if one ranged weapon is found, it's ranged.
-                //Ignoring turrets since they will never be melee.
-
-                hasRanged = inventory.WeaponSlots
-                    .Any(x => x.Items
-                        .Any(y => y?.Record<WeaponRecord>()?.IsMelee == false)
-                    );
-
-                weaponsList = inventory.WeaponSlots
-                    .SelectMany(x =>
-                        x.Items
-                            .Select(y => y.Record<WeaponRecord>().Id)
-                            )
-                    .ToList();
+                controller.Focused = true;
             }
-
-            return $"{monster.ActionPointsLeft + monster.ActionPointsProcessed}{(hasRanged ? "" : "M")}";
-        }
-
-    }
-
-
-    [HarmonyPatch(typeof(Monster), nameof(Monster.ProcessDamage))]
-    public static class Patch_ProcessDamage
-    {
-        public static void Postfix(Monster __instance)
-        {
-            Plugin.UpdateText(__instance);
-        }
-
-    }
-
-
-    //Debug - Attempt at handling the initialize
-
-    [HarmonyPatch(typeof(Monster), nameof(Monster.Configure3dView))]
-    public static class Monster_Patch_Configure3dView
-    {
-        public static void Postfix(Monster __instance)
-        {
-            Plugin.createText(__instance);
         }
     }
-
-    [HarmonyPatch(typeof(Monster), nameof(Monster.Mutate))]
-    public static class Patch_OnMutate
-    {
-        public static void Postfix(Monster __instance)
-        {
-            Plugin.createText(__instance);
-        }
-    }
-
-    [HarmonyPatch(typeof(Monster), nameof(Monster.UpdateVisibility), new Type[]{})]
-    public static class Patch_CreatureViewOnVisualRefreshed
-    {
-        public static void Postfix(Monster __instance)
-        {
-            Plugin.UpdateText(__instance);
-        }
-    }
-
 }

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfe8308630dc4bf1b39f6ee5f861762b, type: 3}
+  m_Name: CreatureAnimator3dPreset
+  m_EditorClassIdentifier: 
+  afterMoveDelay: 0.07
+  endMoveThreshold: 0.001
+  moveDuration: 0.3
+  meleeAttackDuration: 0.4
+  meleeAttackHitTime: 0.2
+  meleeAttackMaxT: 0.2
+  meleeAttackMoveDelay: 0.2
+  twoHandedShootDelay: 0.25
+  hittedMaxT: 0.45
+  hittedMaxPosTime: 0.04
+  hittedThrowbackDuration: 0.15
+  throwbackDuration: 0.08
+  keyFramesList:
+  - AnimationType: 6
+    Framerate: 10
+    IsLooped: 0
+    Keyframes: 0f0000000a0000000a000000
+  - AnimationType: 3
+    Framerate: 10
+    IsLooped: 0
+    Keyframes: 000000000a000000140000001e00000023000000280000002d000000460000001e000000
+  - AnimationType: 7
+    Framerate: 13
+    IsLooped: 0
+    Keyframes: 000000000a000000140000001e00000028000000320000003c00000046000000500000005a000000
+  - AnimationType: 5
+    Framerate: 10
+    IsLooped: 0
+    Keyframes: 0a000000140000001e0000002d0000003200000037000000280000002d0000003200000037000000
+  - AnimationType: 2
+    Framerate: 10
+    IsLooped: 0
+    Keyframes: 0a0000000f000000190000001e0000002800000032000000
+  - AnimationType: 4
+    Framerate: 4
+    IsLooped: 1
+    Keyframes: 000000001400000014000000000000002800000028000000
+  - AnimationType: 1
+    Framerate: 10
+    IsLooped: 0
+    Keyframes: 000000000a000000140000001e0000001e00000032000000

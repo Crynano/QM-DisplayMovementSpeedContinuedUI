@@ -1,0 +1,222 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0520f667ec24cfb970ffeb1e646eaff, type: 3}
+  m_Name: view
+  m_EditorClassIdentifier: 
+  _creature3dModel: {fileID: 5536991738996433704, guid: 06c49cc1eb5349e4d87187571b83e49d, type: 3}
+  _skin:
+  - {fileID: 2800000, guid: fa3b41626764c3e43a74c8d35c927c2a, type: 3}
+  - {fileID: 2800000, guid: 1343618c380639543be9ec7e622a8dc3, type: 3}
+  _animationSets:
+  - Grip: 2
+    Clips:
+    - AnimationType: 1
+      Clip: {fileID: 7400000, guid: 123be7e2d1e0fa44789f4b0eea5fc301, type: 2}
+    - AnimationType: 2
+      Clip: {fileID: 7400000, guid: d90e3987f70f64d468be86c2b7464212, type: 2}
+    - AnimationType: 4
+      Clip: {fileID: 7400000, guid: e20b00eb96acd874b917aeb58ff695c5, type: 2}
+    - AnimationType: 6
+      Clip: {fileID: 7400000, guid: 4e65ab1f97680e949a09a8a88d64b0ce, type: 2}
+    - AnimationType: 7
+      Clip: {fileID: 7400000, guid: 65d89ccbb29ec674dae3b62aca9ea72f, type: 2}
+  - Grip: 16
+    Clips:
+    - AnimationType: 1
+      Clip: {fileID: 7400000, guid: f309b39a86d6e864e858ea66940f9ff5, type: 2}
+    - AnimationType: 2
+      Clip: {fileID: 7400000, guid: d19e3a5814e60b74298486a1abd73f6a, type: 2}
+    - AnimationType: 3
+      Clip: {fileID: 7400000, guid: 36546c9a224f03248b5c01316081753f, type: 2}
+    - AnimationType: 4
+      Clip: {fileID: 7400000, guid: 37be40921630e44419c02b6eba8df689, type: 2}
+    - AnimationType: 5
+      Clip: {fileID: 7400000, guid: d337a6fbaf88754429a936882a0a5c80, type: 2}
+    - AnimationType: 6
+      Clip: {fileID: 7400000, guid: ed2b7232324d28848b0bb124620c2515, type: 2}
+    - AnimationType: 7
+      Clip: {fileID: 7400000, guid: 0249a62e8c5576f4f8bf105e02864078, type: 2}
+  - Grip: 4
+    Clips:
+    - AnimationType: 1
+      Clip: {fileID: 7400000, guid: 3ff0fd26a18e6374aafac55786130a11, type: 2}
+    - AnimationType: 2
+      Clip: {fileID: 7400000, guid: 0b0a7a4ce3929494992db150d9d0748b, type: 2}
+    - AnimationType: 3
+      Clip: {fileID: 7400000, guid: 70a4c571477b40748b0e36f6bc46b2b4, type: 2}
+    - AnimationType: 4
+      Clip: {fileID: 7400000, guid: 2fe64427250ad4c468cabc28c71f3771, type: 2}
+    - AnimationType: 5
+      Clip: {fileID: 7400000, guid: c925c5b964d52dd4186b576f7016a8de, type: 2}
+    - AnimationType: 6
+      Clip: {fileID: 7400000, guid: afe769da824ce3d48abfabf6829bb704, type: 2}
+    - AnimationType: 7
+      Clip: {fileID: 7400000, guid: ad2b5784b537f2a41b0cb9e90e9ecc8c, type: 2}
+  - Grip: 8
+    Clips:
+    - AnimationType: 1
+      Clip: {fileID: 7400000, guid: eb6431ded5cbb5948a12612891176879, type: 2}
+    - AnimationType: 2
+      Clip: {fileID: 7400000, guid: 4bbbff44edd7b034983101cef1bb2998, type: 2}
+    - AnimationType: 3
+      Clip: {fileID: 7400000, guid: ab455f69f32cdf2439fa60c0bbb7772f, type: 2}
+    - AnimationType: 4
+      Clip: {fileID: 7400000, guid: 81f18d87839a89643b8e13ee4b61b748, type: 2}
+    - AnimationType: 5
+      Clip: {fileID: 7400000, guid: 34d2a21181622cc418d6facb4f02dad3, type: 2}
+    - AnimationType: 6
+      Clip: {fileID: 7400000, guid: 5dfca8c639d64d24ea73698100acd550, type: 2}
+    - AnimationType: 7
+      Clip: {fileID: 7400000, guid: 26e6f23505d60d54fa5f3ca09067080c, type: 2}
+  - Grip: 1
+    Clips:
+    - AnimationType: 1
+      Clip: {fileID: 7400000, guid: d047990130c3dd34ebd1b3a63d2b5595, type: 2}
+    - AnimationType: 2
+      Clip: {fileID: 7400000, guid: 0ebfd5530ff055745950cb4a1710838a, type: 2}
+    - AnimationType: 3
+      Clip: {fileID: 7400000, guid: 7e988a912d52613419bcfae5716d6475, type: 2}
+    - AnimationType: 4
+      Clip: {fileID: 7400000, guid: f0558aadd4e01e344a97cb345cdae926, type: 2}
+    - AnimationType: 5
+      Clip: {fileID: 7400000, guid: 5e3cbab038332a44491845da524206ed, type: 2}
+    - AnimationType: 6
+      Clip: {fileID: 7400000, guid: 4f3b6d205d8a03e4da787edd9a03d087, type: 2}
+    - AnimationType: 7
+      Clip: {fileID: 7400000, guid: b5aca3763fa9a844f8db1d4aa504a2e8, type: 2}
+  _armorTypes:
+  - ArmorType: ArmorHeavy
+    Prefabs:
+    - {fileID: 2506206271442218165, guid: e7d72a01969fee541a592f7052b961db, type: 3}
+    - {fileID: 334861120796471126, guid: 46b885f993716f14a9a9cc1fa01a9b8b, type: 3}
+    - {fileID: 1454736707933563777, guid: da50e49ea7f498945b18306cefda0825, type: 3}
+    - {fileID: 8458412919998362764, guid: d10c290cf4b57a84c8f81e92f385001f, type: 3}
+    - {fileID: 5468655562262006853, guid: ad8774bef14d8a7449f444bc68752268, type: 3}
+    - {fileID: 662104981475100388, guid: 850fc58f8c63fab4fa1e26335fb67e32, type: 3}
+    - {fileID: 882713145003853426, guid: 26bcec9527b8eba46a1507a4df8be721, type: 3}
+    - {fileID: 8363538164955506506, guid: a0c0ee880b506d44cb6618251bec22f4, type: 3}
+    - {fileID: 4703191243366173998, guid: 2ba6391aec836a64cbc792295489a9e1, type: 3}
+    - {fileID: 2656505554918072901, guid: 9547e99e97ebec14c901821101afe16d, type: 3}
+    - {fileID: 1690452394743888054, guid: 786769c69d19b49408f5cc9526b6fa40, type: 3}
+    - {fileID: 5445640823672321365, guid: 33fd06169e629174797eb46c490c8c89, type: 3}
+    - {fileID: 6988655684374247881, guid: ad268e60f409fa945896e9f44adb387d, type: 3}
+  - ArmorType: ArmorLight
+    Prefabs:
+    - {fileID: 3470485672885228167, guid: 0b65999877821de488bd4281d6901f45, type: 3}
+    - {fileID: 3176587163792318427, guid: dce9caa2677e1c14eb95b46395cac470, type: 3}
+    - {fileID: 141327031036238485, guid: d02c7ac7a1bfee64f96fd500973f12ea, type: 3}
+    - {fileID: 7866110307491133148, guid: f754633afde0c4746a5b26fe06f8b08a, type: 3}
+    - {fileID: 5284887415526044957, guid: b5d3c5db428d4f848a3fbf428b63d1b5, type: 3}
+    - {fileID: 8195758745208579996, guid: 0fcb3355e1583bc4f988927722d267c5, type: 3}
+    - {fileID: 6045452120602484759, guid: 0f64d157ee7a6094a99aa0abbed07c31, type: 3}
+    - {fileID: 5066487715569721140, guid: e3d3ae4e78a4d474385c8f34290e09fd, type: 3}
+    - {fileID: 7506245426938303350, guid: 9011d1061bab8b941bc35be714875115, type: 3}
+    - {fileID: 6188556599548727206, guid: 1de061cefe4546f4dbaf71d4cf85f550, type: 3}
+    - {fileID: 2710199771249089525, guid: 19a37c89052182c4cb97c197def1d6f7, type: 3}
+    - {fileID: 7525037951178719907, guid: 1223188c873e558499fed203994db726, type: 3}
+    - {fileID: 5192209504851836491, guid: 01887d097961e914695794fe1d536f69, type: 3}
+  - ArmorType: ArmorMedium
+    Prefabs:
+    - {fileID: 8204624689994061218, guid: 15346c5fe45ea9244ba1f8b94ccc7759, type: 3}
+    - {fileID: 26295981328475690, guid: 9c3df94afab4de04a80980ddf706e449, type: 3}
+    - {fileID: 5933184185059094263, guid: 5fa6ef343cf5c4648bcf7573a92b2e8b, type: 3}
+    - {fileID: 1234277295649407044, guid: f78dd48e53938c04b82d53d9d52a5dab, type: 3}
+    - {fileID: 3437200539379808243, guid: 4effadadf06cf694aa3f85479906778f, type: 3}
+    - {fileID: 5084153703292630589, guid: 1c573b452b5762d4ea35a482f4fe913e, type: 3}
+    - {fileID: 3176052838397677172, guid: d4a21a0444b15d0439c70eeb9dcb0a55, type: 3}
+    - {fileID: 1651921233042968081, guid: b714a6ac38ea69d4eadf851ebaaa40b8, type: 3}
+    - {fileID: 4546642836375580562, guid: 780826957a9c6934ea8a2777acc39e7b, type: 3}
+    - {fileID: 7582890048972728523, guid: be2495af1afc8ff439da857b5ddab954, type: 3}
+    - {fileID: 2877571840932684310, guid: 7d4a15a3e9790e446b10af6732c92c5a, type: 3}
+  - ArmorType: ClothCommon
+    Prefabs:
+    - {fileID: 3577423306893535697, guid: 7ea908c8945fe0c4abdce16e4189f6b2, type: 3}
+    - {fileID: 2698755845809628316, guid: 449ac5186a6bb774da18d43f00730223, type: 3}
+    - {fileID: 21513555233825583, guid: 8bca4ae0dbbba5b4190c6e00123303b4, type: 3}
+    - {fileID: 5097564075203756144, guid: 3b683b905aa3635478e3d53dcb041646, type: 3}
+    - {fileID: 1358267977295905205, guid: fc1f680d1507ed447a37b9383662abb6, type: 3}
+    - {fileID: 8029007592564670182, guid: 4ad49637468a87545bfadc7511918071, type: 3}
+    - {fileID: 6399343693169808788, guid: c235dd8cbd07fd34ab1d9971be4c3b39, type: 3}
+  - ArmorType: ClothCommonAlternative
+    Prefabs:
+    - {fileID: 7877873400535359268, guid: f94ce4259dbf5824e9ac8aa9073d4e60, type: 3}
+    - {fileID: 7032345938007048815, guid: 388b3e9e3298f974590c4faa65569957, type: 3}
+    - {fileID: 2301880743462403937, guid: a751233d93a33874f874fa55eed366cf, type: 3}
+    - {fileID: 841531442831477233, guid: e3445800db4805b4b896ab7ddf0871c0, type: 3}
+  - ArmorType: ClothPosessed
+    Prefabs:
+    - {fileID: 2661468355369898935, guid: c7956ac3be19423469d6de45b323f9f0, type: 3}
+  - ArmorType: ClothReinforced
+    Prefabs:
+    - {fileID: 5930295087358132347, guid: 3d4ff0c98ceeaad4698457c5c11cf557, type: 3}
+  - ArmorType: ClothScientist
+    Prefabs:
+    - {fileID: 2346774202562865120, guid: 54f1eb668411af749abf5a57eaebd292, type: 3}
+    - {fileID: 7172276193232153092, guid: e1c9a1b50e58bf64fb3e933910a9fc44, type: 3}
+    - {fileID: 7910623628843758160, guid: f49efad01f37c5949a5d3beb3ba50126, type: 3}
+    - {fileID: 2501871896659008257, guid: 68e17e07856b4874e86af03cdb257d8f, type: 3}
+    - {fileID: 1148492929248591025, guid: 147b286efe8109e4fbfe29f8258d9315, type: 3}
+    - {fileID: 575822664189030549, guid: 17be24bdc7ab9cf4d91b0f8172146192, type: 3}
+    - {fileID: 310301461302986227, guid: 0a8a33e60e8a2f44099429bda002ed7e, type: 3}
+  - ArmorType: ClownMask
+    Prefabs:
+    - {fileID: 6815505544761850255, guid: f15126b42a9c21342bec3d6c458d4816, type: 3}
+  - ArmorType: Cristmas
+    Prefabs:
+    - {fileID: 7060668780558595069, guid: 1e8f21a2d7f637547bcb2bc50eff821e, type: 3}
+  - ArmorType: GasMask
+    Prefabs:
+    - {fileID: 2080723283757154828, guid: 1451a07539864c14fa2ac79b70d50417, type: 3}
+  - ArmorType: MercuryLight
+    Prefabs:
+    - {fileID: 8037360562997442514, guid: 77ddf10dc8e699c4f80cd8d5245c13a1, type: 3}
+  - ArmorType: PoliceLight
+    Prefabs:
+    - {fileID: 8236384810127174967, guid: 13e3b2ac6b9a5184cb5013c0c34f020d, type: 3}
+  - ArmorType: PoliceMedium
+    Prefabs:
+    - {fileID: 5685631759288914929, guid: ce6dd98e7b2bf96409b1368ecd3d019b, type: 3}
+    - {fileID: 7884959026480653981, guid: 27d5dd2d96d46424caffd7be916ebed8, type: 3}
+    - {fileID: 3524007467265487521, guid: 630776179d1748448a2cc254ace4254b, type: 3}
+  - ArmorType: VenusHeavy
+    Prefabs:
+    - {fileID: 4153446738396525914, guid: 7b180a2d1a28ce842b28a6f6399c43e6, type: 3}
+    - {fileID: 2046064253102587159, guid: a717b0eee4e42894eaeebf13fc34f21e, type: 3}
+  - ArmorType: VenusLight
+    Prefabs:
+    - {fileID: 899078558263787849, guid: ba2062312aae63f4ba84ed2c8627587f, type: 3}
+    - {fileID: 7361981355008775604, guid: 230ae976241a52b49ad0911b7391bc4f, type: 3}
+    - {fileID: 6570609691894482851, guid: 53d14cf2453d822488deeec03d630d15, type: 3}
+    - {fileID: 5196984972267377364, guid: c7945fd637597d54e962dc5e1de85d16, type: 3}
+    - {fileID: 1036754717566336626, guid: fa00b586a5d15d14492627b86e523db7, type: 3}
+  _hairTypes:
+  - HairType: hair1
+    Prefab: {fileID: 6316205607085656622, guid: 085aee1a8bed53c4d9b2a92471042e18, type: 3}
+  - HairType: hair2
+    Prefab: {fileID: 6316205607085656622, guid: 187e03596c9ceda42afb30f310a59665, type: 3}
+  - HairType: hair3
+    Prefab: {fileID: 6316205607085656622, guid: 9b41fc3ee0ac1a249adb429e0453c89b, type: 3}
+  _hairTexture: {fileID: 2800000, guid: 7bebc62d0e057064193733a9800a0e19, type: 3}
+  _inventoryDummySprite: {fileID: 21300000, guid: 138b2ada7ae45584083c65f52dc6ed30, type: 3}
+  _inventoryDummyLinesSprite: {fileID: 21300000, guid: ded93f5fa25504b4c9dc5d24bb25808c, type: 3}
+  _blood: 0
+  _putCorpse: 1
+  _putBlood: 1
+  _putBloodCorners: 0
+  _interactWithBloodTrail: 1
+  _activityStatusY: 0.34
+  _shakeCameraOnMove: 0
+  _bigShadow: 0
+  _deathBloodAnimSprites: []
+  _deathAnimFrameRate: 10
+  _boxColliderOffset: {x: 0, y: 0.189}
+  _boxColliderSize: {x: 0.2, y: 0.282}

@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7334466721197111807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22bb7fd1d3b56a48bc52f8e407901d6, type: 3}
+  m_Name: ManifestIdentity
+  m_EditorClassIdentifier: 
+  StagingPaths: []
+  Author: Crynano
+  Name: APController
+  Description: 
+  Version: 1.0
+  Dependencies: []
+--- !u!114 &-4328148008921496664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17d1008b78cb6e846889b7778282fbef, type: 3}
+  m_Name: AssetBundleDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <APControllerModPath>
+  - <APControllerWorkshopPath>
+  assetBundles:
+  - assetBundleName: apControllerBundle
+    assets:
+    - {fileID: 3906281314473124170, guid: 3b6cf7abe735f2f489e0d04026650564, type: 3}
+    - {fileID: 2800000, guid: 079dc00a1d59c044e9aea8475386ef02, type: 3}
+    - {fileID: 2800000, guid: 1a37f546e7c1a984d853cdc6913ea45c, type: 3}
+    - {fileID: 2800000, guid: 740426be3ad22eb4593c4e76ee8f9444, type: 3}
+    - {fileID: 2800000, guid: 8896647eb20e3b24fab5f557becb1cc6, type: 3}
+    - {fileID: 2800000, guid: 4f5573c7b1fb43643ae3a6559d914387, type: 3}
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
+  m_Name: APControllerManifest
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: -7334466721197111807}
+  - {fileID: 927620876383690835}
+  - {fileID: -4328148008921496664}
+  identity: {fileID: -7334466721197111807}
+  QuickAccess: 0
+--- !u!114 &927620876383690835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7e13dda513544419a89926bd12ad8a, type: 3}
+  m_Name: AssemblyDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <APControllerModPath>
+  - <APControllerWorkshopPath>
+  definitions:
+  - {fileID: 5897886265953266890, guid: e1c58dc6891d4fa4aad6d01c2b816ef0, type: 3}

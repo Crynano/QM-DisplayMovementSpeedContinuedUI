@@ -1,7 +1,17 @@
 {
-  "UniqueModName": "NBKRedSpy_QM_DisplayMovement_Continued",
+  "UniqueModName": "Crynano_QM_DisplayMovementSpeedContinuedUI",
   "Assemblies": [
-    "QM_DisplayMovementSpeedContinued.dll"
+    "QM_DisplayMovementSpeedContinuedUI.dll"
   ],
-  "Dependencies": []
+  "Dependencies": [],
+  "SteamTags":
+  [
+    "0.9.9",
+    "0.9.5",
+    "0.9.2",
+    "0.9.1",
+    "0.9",
+    "Quality of Life",
+    "UI"
+  ]
 }
