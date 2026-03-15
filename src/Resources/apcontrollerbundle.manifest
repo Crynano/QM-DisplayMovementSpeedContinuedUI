@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 4147411154
+CRC: 1879373804
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 282801c562e4438dd3abfdc52e2adafa
+    Hash: da0cd3e8f9b00459e1e7d54993c666fa
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 04f91d546092b83a175db5731e883c65
+    Hash: 0d22cc1a0e4ad23174d91531505eb956
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 282801c562e4438dd3abfdc52e2adafa
+    Hash: da0cd3e8f9b00459e1e7d54993c666fa
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -35,6 +35,8 @@ ClassTypes:
 - Class: 222
   Script: {instanceID: 0}
 - Class: 224
+  Script: {instanceID: 0}
+- Class: 225
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Unity.TextMeshPro
@@ -65,25 +67,16 @@ SerializeReferenceClassIdentifiers:
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
 - Assets/Mods/APController/Sprites/ranged.png
-- Assets/Mods/APController/Sprites/cold.png
 - Assets/Mods/APController/Sprites/pierce.png
 - Assets/TextMesh Pro/Shaders/TMP_SDF.shader
 - Assets/Mods/APController/Sprites/fire.png
 - Assets/Font/MinecraftRegular-Bmg3.otf
 - Assets/Mods/APController/Prefabs/ControllerPrefab.prefab
-- Assets/Mods/APController/Sprites/shock.png
 - Assets/Mods/APController/Sprites/default.png
-- Assets/Mods/APController/Sprites/blunt.png
-- Assets/Mods/APController/Sprites/beam.png
-- Assets/Mods/APController/Sprites/poison.png
-- Assets/Font/P_DOS_Modded.asset
-- Assets/Mods/APController/Sprites/lacer.png
 - Assets/Mods/APController/Shader/GreenReplaceShader.shadergraph
+- Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
 - Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Text Component Icon.psd
 - Assets/Font/AP Text.asset
-- Packages/com.unity.textmeshpro/Editor Resources/Gizmos/TMP - Font Asset Icon.psd
-- Assets/Font/PerfectDOSVGA437.ttf
-- Assets/Mods/APController/Shader/Outline.shadersubgraph
 - Assets/Mods/APController/Shader/SegmentedHealthBar.shadergraph
 - Assets/Mods/APController/Sprites/melee.png
 - Assets/Mods/APController/Materials/SegmentedHealthMaterial.mat

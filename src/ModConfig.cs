@@ -1,15 +1,26 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace QM_DisplayMovementSpeedContinuedUI
 {
     public class ModConfig
     {
+        public enum UiMode
+        {
+            Off,
+            AlwaysOn,
+            OnlyWhenFocused
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public UiMode UIMode { get; set; } = UiMode.OnlyWhenFocused;
+
         public bool DebugMode { get; set; } = false;
         public bool EnabledHealthBar { get; set; } = true;
         public bool EnabledAttackType { get; set; } = true;
@@ -19,7 +30,7 @@ namespace QM_DisplayMovementSpeedContinuedUI
         public bool HealthBarBlink { get; set; } = true;
         public float HealthBarBlinkSpeed { get; set; } = 2f;
         public bool EnableRemainingHealthPreviewBar { get; set; } = true;
-        
+
         //public Color BackgroundHealthColor { get; set; } = Color.black; // WONT BE USED.
         public bool HealthChunkEnabled { get; set; } = true;
         public int HealthChunkValue { get; set; } = 20;
@@ -29,10 +40,10 @@ namespace QM_DisplayMovementSpeedContinuedUI
         [JsonProperty("HealthChunkDividerColor")]
         private string _healthChunkDividerColor;
 
-        
+
         [JsonProperty("CurrentHealthColor")]
         private string _currentHealthColor;
-        
+
         [JsonIgnore]
         public Color CurrentHealthColor
         {
@@ -54,8 +65,9 @@ namespace QM_DisplayMovementSpeedContinuedUI
             }
             set => _remainingHealthColor = ColorUtility.ToHtmlStringRGBA(value);
         }
-        
-        [JsonIgnore]public Color HealthChunkDividerColor
+
+        [JsonIgnore]
+        public Color HealthChunkDividerColor
         {
             get
             {
@@ -64,7 +76,7 @@ namespace QM_DisplayMovementSpeedContinuedUI
             }
             set => _healthChunkDividerColor = ColorUtility.ToHtmlStringRGBA(value);
         }
-       
+
 
         // [NonSerialized] [JsonIgnore] private static readonly JsonSerializerSettings _options = new JsonSerializerSettings()
         // {
@@ -125,38 +137,39 @@ namespace QM_DisplayMovementSpeedContinuedUI
 
         public void SaveConfigJson(string configPath)
         {
-            Logger.LogDebug("SaveConfigJson(): Saving config...");
-            var data = Newtonsoft.Json.JsonConvert.SerializeObject(this, Formatting.Indented);
-            Logger.LogDebug("SaveConfigJson(): Object is serialized");
+            var data = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(configPath, data);
-            Logger.LogDebug("SaveConfigJson(): Saved config");
         }
 
         public void LoadConfig(Dictionary<string, object> propertiesDictionary)
         {
-            Logger.LogDebug("Loading config");
             foreach (var nameValuePair in propertiesDictionary)
             {
-                Logger.LogDebug($"Loading info property {nameValuePair.Key} with value {nameValuePair.Value}");
                 try
                 {
-                    PropertyInfo propertyInfo = this.GetType().GetProperty(nameValuePair.Key,
+                    PropertyInfo propertyInfo = this.GetType()
+                        .GetProperty(nameValuePair.Key,
                         BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-                    Logger.LogDebug($"Does property exist? {propertyInfo != null}");
-                    Logger.LogDebug($"Loading property named {nameValuePair.Key} with value {nameValuePair.Value} of type {propertyInfo?.PropertyType}");
-                    propertyInfo?.SetValue(this, nameValuePair.Value,
-                        null);
-                    Logger.LogDebug("Post assignment debug.");
+
+                    if (propertyInfo.PropertyType.IsEnum)
+                    {
+                        //Convert from string to enum
+                        object enumValue = Enum.Parse(propertyInfo.PropertyType, nameValuePair.Value.ToString());
+                        propertyInfo?.SetValue(this, enumValue, null);
+                    }
+                    else
+                    {
+                        propertyInfo?.SetValue(this, nameValuePair.Value, null);
+                    }
                 }
                 catch (Exception e)
                 {
                     Logger.LogError(e.Message);
                 }
             }
-            Logger.LogDebug("LoadConfig(): Finished loading properties into memory!");
         }
 
-        private object ConvertValue(string value)
+        private static object ConvertValue(string value)
         {
             if (int.TryParse(value, out int intValue))
             {

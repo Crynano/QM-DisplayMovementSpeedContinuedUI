@@ -1,26 +1,33 @@
 ﻿using HarmonyLib;
 using MGSC;
+using System;
 
-namespace QM_DisplayMovementSpeedContinuedUI
+namespace QM_DisplayMovementSpeedContinuedUI.Patches
 {
-    public class HoverPatches
+    public static class HoverPatches
     {
-        // Custom new patch for UI
-        [HarmonyPatch(typeof(ObjHighlightController), nameof(ObjHighlightController.Process))]
-        public static class Patch_ObjHighlightController_Process
+        [HarmonyPatch(typeof(Monster), nameof(Monster.UpdateVisibility), new Type[] { typeof(bool) })]
+        public static class Path_Monster_UpdateVisibility_Bool
         {
-            public static void Postfix(CellPosition cellUnderCursor, ObjHighlightController __instance)
+            public static void Postfix(bool isSeen, Monster __instance)
             {
-                Plugin.UpdateUI(cellUnderCursor, __instance);
+                if (isSeen)
+                {
+                    Plugin.UpdateMonsterUI(__instance);
+                }
             }
         }
 
-        [HarmonyPatch(typeof(ObjHighlightController), nameof(ObjHighlightController.Unhighlight))]
-        public static class Patch_ObjHighlightController_Unhighlight
+        [HarmonyPatch(typeof(Monster), nameof(Monster.Highlight))]
+        public static class Patch_Monster_Highlight
         {
-            public static void Postfix()
+            public static void Postfix(bool val, bool destroyable, Monster __instance)
             {
-                Plugin.ForceDisableUI();
+                if (val)
+                {
+                    Plugin.UpdateMonsterUI(__instance);
+                    Plugin.SetEnemyFocus(__instance);
+                }
             }
         }
     }

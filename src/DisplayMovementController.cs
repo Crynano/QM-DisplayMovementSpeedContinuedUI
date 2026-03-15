@@ -11,22 +11,23 @@ namespace QM_DisplayMovementSpeedContinuedUI
     [UIView(GameLoopGroup.Dungeon, false, false)]
     public class DisplayMovementController : MonoBehaviour
     {
-        public Vector3 adjustment = new Vector3(0f, 0.15f, 0f);
+        private static Vector3 adjustment = new Vector3(0f, 0.15f, 0f);
 
-        public TextMeshProUGUI apTextObject;
-        public TextMeshProUGUI numericHealthText;
-        public Image attackTypeImage;
-        public Image damageTypeImage;
-        public Image healthBar;
+        [Header("Unity Components")]
+        TextMeshProUGUI apTextObject;
+        TextMeshProUGUI numericHealthText;
+        Image attackTypeImage;
+        Image damageTypeImage;
+        Image healthBar;
 
-        [Header("Images")] private Sprite _meleeSprite;
+        [Header("Sprites")]
+        private Sprite _meleeSprite;
         private Sprite _rangedSprite;
-        private Sprite _defaultSprite;
 
-        // All damage sprites
-        private Dictionary<string, Sprite> DamageSprites;
+        private Dictionary<string, Sprite> _damageSprites;
 
-        private Monster _lastMonster;
+        private Creature _creature;
+        public Creature Creature => _creature;
 
         private RectTransform _canvas;
 
@@ -34,16 +35,87 @@ namespace QM_DisplayMovementSpeedContinuedUI
 
         private Material hpMaterial;
 
-        private List<string> _damageTypes = new List<string>
-            { "blunt", "pierce", "lacer", "fire", "cold", "poison", "shock", "beam" };
+        private CanvasGroup _canvasGroup;
+        private ModConfig.UiMode cachedUiMode;
+        public bool Focused { get; set; }
+        public bool IsDead { get; private set; }
 
-        // public void Awake()
-        // {
-        //     LoadComponents();
-        // }
+        public void Awake()
+        {
+            _canvasGroup = GetComponent<CanvasGroup>();
+        }
 
-        // Call LoadComponents after its created. Awake just creates a lag spike when user first enables it.
-        public void LoadComponents()
+        private void Start()
+        {
+            _playerData = DungeonGameMode.Instance.Creatures.Player.CreatureData;
+        }
+
+        public void LateUpdate()
+        {
+            if (Creature == null || Creature.CreatureData.Health.Dead)
+            {
+                IsDead = true;
+            }
+
+            if (IsDead || !_creature.IsSeenByPlayer)
+            {
+                _canvasGroup.alpha = 0f;
+                return;
+            }
+
+            if (cachedUiMode == ModConfig.UiMode.OnlyWhenFocused)
+            {
+                _canvasGroup.alpha = (Focused ? 1f : 0f);
+            }
+            else
+            {
+                _canvasGroup.alpha = (Focused ? 1f : 0.5f);
+            }
+
+            if (Camera.main != null)
+            {
+                
+                Vector2 viewPortPos =
+                    Camera.main.WorldToViewportPoint(Creature.transform.position + Vector3.Scale(Camera.main.transform.up, adjustment));
+                Vector2 worldObjectScreenPosition = new Vector2(
+                    ((viewPortPos.x * _canvas.sizeDelta.x) - (_canvas.sizeDelta.x * 0.5f)),
+                    ((viewPortPos.y * _canvas.sizeDelta.y) - (_canvas.sizeDelta.y * 0.5f)));
+                
+                ((RectTransform)transform).anchoredPosition = worldObjectScreenPosition;
+                ((RectTransform)transform).localScale = Plugin.ScaleSize;
+            }
+            else
+            {
+                Debug.LogError($"Camera.main is null, UI not tracking enemy correctly.");
+            }
+
+            ChangeSprite(Creature);
+
+            hpMaterial.SetFloat(Plugin.CurrentHealthPercent, Creature.CreatureData.Health.Percent);
+            apTextObject.text = $"{Creature.ActionPointsLeft}";
+            numericHealthText.text = $"{Creature.CreatureData.Health.Value}/{Creature.CreatureData.Health.MaxValue}";
+
+            CalculateDamagePreview(Creature);
+
+            healthBar.SetMaterialDirty();
+
+            Focused = false;
+        }
+
+        public void LoadUI()
+        {
+            LoadComponents();
+            LoadSettings();
+        }
+
+        public void SetSprites(Sprite meleeSprite, Sprite rangedSprite, Dictionary<string, Sprite> damageSprites)
+        {
+            _meleeSprite = meleeSprite;
+            _rangedSprite = rangedSprite;
+            this._damageSprites = damageSprites;
+        }
+
+        private void LoadComponents()
         {
             _canvas = this.gameObject.GetComponentInParent<Canvas>(true).transform as RectTransform;
 
@@ -60,7 +132,10 @@ namespace QM_DisplayMovementSpeedContinuedUI
 
             healthBar = images
                 .First(x => x.gameObject.name.Equals("Healthbar", StringComparison.CurrentCultureIgnoreCase));
+        }
 
+        private void LoadSettings()
+        {
             // Set all material colors here.
             // Grab the material from the healthbar image
             hpMaterial = healthBar.material;
@@ -72,89 +147,25 @@ namespace QM_DisplayMovementSpeedContinuedUI
 
             healthBar.SetMaterialDirty();
 
-            // Keep a white sprite just in case.
-            var whiteSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 2, 2), Vector2.zero);
 
-            // Use static class to load images for the sprites
-            var spriteResourcesList = new List<string> { "melee", "ranged", "default" };
-            spriteResourcesList.AddRange(_damageTypes);
-            
-            // We reduce the call from 2 to 1. More efficient way. We recover all sprites at once.
-            var sprites = DataLoader.LoadFilesFromMemory<Sprite>(Plugin.BundleName, spriteResourcesList).ToList();
-            _meleeSprite = sprites[0] != null ? sprites[0] : whiteSprite;
-            _rangedSprite = sprites[1] != null ? sprites[1] : whiteSprite;
-            _defaultSprite = sprites[2] != null ? sprites[2] : whiteSprite;
-            
-            DamageSprites = new Dictionary<string, Sprite>();
-
-            //Populate dictionary
-            for (int i = 3; i < sprites.Count; i++)
-            {
-                DamageSprites.Add(_damageTypes[i-3], sprites[i]);
-            }
-
-            attackTypeImage.sprite = _defaultSprite;
-            this.gameObject.SetActive(false);
+            this.apTextObject?.gameObject.SetActive(Plugin.Config.EnabledActionPoints);
+            this.attackTypeImage?.gameObject.SetActive(Plugin.Config.EnabledAttackType);
+            this.damageTypeImage?.gameObject.SetActive(Plugin.Config.EnabledDamageType);
+            this.numericHealthText?.gameObject.SetActive(Plugin.Config.EnabledNumericHealth);
+            this.healthBar?.transform.parent.gameObject.SetActive(Plugin.Config.EnabledHealthBar);
         }
 
-        private void Start()
+        private void CalculateDamagePreview(Creature monster)
         {
-            _playerData = DungeonGameMode.Instance.Creatures.Player.CreatureData;
-        }
-
-        public void SetEnemy(Monster monster, Vector3 worldPos, float scaleSize)
-        {
-            if (monster == null) return;
-
-            if (monster.CreatureData.Health.Dead)
-            {
-                return;
-            }
-
-            if (!monster.IsSeenByPlayer) return;
-
-            if (Camera.main != null)
-            {
-                // Set object world pos to UI!
-                // Didn't remember about the concese calculation, so:
-                // https://discussions.unity.com/t/how-to-convert-from-world-space-to-canvas-space/117981
-                Vector2 viewPortPos =
-                    Camera.main.WorldToViewportPoint(worldPos + Vector3.Scale(Camera.main.transform.up, adjustment));
-                Vector2 worldObjectScreenPosition = new Vector2(
-                    ((viewPortPos.x * _canvas.sizeDelta.x) - (_canvas.sizeDelta.x * 0.5f)),
-                    ((viewPortPos.y * _canvas.sizeDelta.y) - (_canvas.sizeDelta.y * 0.5f)));
-                //viewPortPos += Adjustment;
-                ((RectTransform)transform).anchoredPosition = worldObjectScreenPosition;
-
-                ((RectTransform)transform).localScale = new Vector3(scaleSize, scaleSize, scaleSize);
-            }
-            else
-            {
-                Debug.LogError($"Camera.main is null, UI not tracking enemy correctly.");
-            }
-
-            if (_lastMonster == null || monster != _lastMonster)
-            {
-                AttachToNewMonster(monster);
-                // I cant change sprite here because the enemy can change gun, drop it or switch ammunition. So its updated every frame?
-                // Eugh
-            }
-            
-            ChangeSprite(monster);
-
-            hpMaterial.SetFloat(Plugin.CurrentHealthPercent, monster.CreatureData.Health.Percent);
-            apTextObject.text = $"{monster.ActionPoints}";
-            numericHealthText.text = $"{monster.CreatureData.Health.Value}/{monster.CreatureData.Health.MaxValue}";
-
+            if (!Focused) return;
             if (_playerData == null) Logger.LogError($"SetEnemy(): Could not find player data.");
-            
+
             var weaponRecord = _playerData?.Inventory.CurrentWeapon.Record<WeaponRecord>();
             var weaponComponent = _playerData?.Inventory.CurrentWeapon.Comp<WeaponComponent>();
 
             if (weaponRecord != null && weaponComponent != null)
             {
                 DmgInfo damageInfo = weaponComponent.Damage;
-                var damageResist = monster.CreatureData.GetResist(damageInfo.damage);
 
                 float meleeMult = 1f;
                 if (weaponRecord.IsMelee)
@@ -175,53 +186,48 @@ namespace QM_DisplayMovementSpeedContinuedUI
 
                 float remainingAvgHealth = Mathf.Clamp(currentHealth - avgDamage, 0f, maxHealth);
                 float avgPercent = remainingAvgHealth / maxHealth;
-                
-                Logger.LogDebug(
-                    $"SetEnemy(): Damage Approximation: {avgDamage} avg. {damageInfo.damage} damage with monster having {damageResist}% resistance, totaling {remainingAvgHealth}/{maxHealth} health.\nDisplayed bar is at {avgPercent}%.");
-                
+
                 hpMaterial.SetFloat(Plugin.DamagedHealthPercent, avgPercent);
             }
-            else
-            {
-                // Not executing dmg preview?
-                Logger.LogDebug($"SetEnemy(): Not executing the damage preview.");
-            }
+        }
 
-            healthBar.SetMaterialDirty();
+        public void SetEnemy(Monster monster)
+        {
+            AttachToNewMonster(monster);
+            ChangeSprite(Creature);
             EnableUI();
         }
 
-        public void AttachToNewMonster(Monster newMonster)
+        public void AttachToNewMonster(Creature newMonster)
         {
-            if (_lastMonster != null)
-                _lastMonster.CreatureData.Health.Killed -= OnAttachedDead;
-            newMonster.CreatureData.Health.Killed += OnAttachedDead;
-            _lastMonster = newMonster;
+            if (_creature != null)
+                _creature.CreatureData.Health.Killed -= OnAttachedDead;
 
-            healthBar.material.SetFloat(Plugin.ChunkAmount,
-                (float)_lastMonster.CreatureData.Health.MaxValue / (float)Plugin.Config.HealthChunkValue);
+            newMonster.CreatureData.Health.Killed += OnAttachedDead;
+
+            _creature = newMonster;
+
+            var hpval = (float)_creature.CreatureData.Health.MaxValue / (float)Plugin.Config.HealthChunkValue;
+
+            healthBar.material.SetFloat(Plugin.ChunkAmount, hpval);
             healthBar.SetMaterialDirty();
         }
 
-        private void ChangeSprite(Monster monster)
+        private void ChangeSprite(Creature monster)
         {
             Inventory inventory = monster.CreatureData.Inventory;
 
             if (inventory == null) return;
 
-            // hasRanged = inventory.WeaponSlots
-            //     .Any(x => x.Items
-            //         .Any(y => y?.Record<WeaponRecord>()?.IsMelee == false)
-            //     );
-
             attackTypeImage.sprite = inventory.CurrentWeapon.Record<WeaponRecord>().IsMelee ? _meleeSprite : _rangedSprite;
 
-            // Now we check the damage of the weapon.
             var currentDamageType =
                 inventory.CurrentWeapon.Comp<WeaponComponent>().Damage.damage ??
                 inventory.CurrentWeapon.Comp<WeaponComponent>().CurrentAmmoType.DmgType ??
                 string.Empty;
-            DamageSprites.TryGetValue(currentDamageType, out var sprite);
+
+            _damageSprites.TryGetValue(currentDamageType, out var sprite);
+
             if (sprite != null)
             {
                 Logger.LogDebug($"ChangeSprite(): Setting sprite for {currentDamageType}");
@@ -235,28 +241,24 @@ namespace QM_DisplayMovementSpeedContinuedUI
 
         private void OnAttachedDead()
         {
-            DisableUI();
+            Plugin.ReleaseMonsterUI(this.Creature);
         }
 
         public void DisableUI()
         {
-            this.gameObject.SetActive(false);
+            _canvasGroup.alpha = 0f;
+            this.enabled = false;
         }
 
         private void EnableUI()
         {
-            this.apTextObject?.gameObject.SetActive(Plugin.Config.EnabledActionPoints);
-            this.attackTypeImage?.gameObject.SetActive(Plugin.Config.EnabledAttackType);
-            this.damageTypeImage?.gameObject.SetActive(Plugin.Config.EnabledDamageType);
-            this.numericHealthText?.gameObject.SetActive(Plugin.Config.EnabledNumericHealth);
-            this.healthBar?.transform.parent.gameObject.SetActive(Plugin.Config.EnabledHealthBar);
+            _canvasGroup.alpha = 1f;
+            this.enabled = true;
+        }
 
-            hpMaterial.SetFloat(Plugin.EnableDamagePreview, Plugin.Config.EnableRemainingHealthPreviewBar ? 1 : 0);
-            hpMaterial.SetFloat(Plugin.EnableChunk, Plugin.Config.HealthChunkEnabled ? 1 : 0);
-            hpMaterial.SetFloat(Plugin.CurrentHealthBlink, Plugin.Config.HealthBarBlink && Plugin.Config.EnableRemainingHealthPreviewBar ? 1 : 0);
-            healthBar?.SetMaterialDirty();
-
-            this.gameObject.SetActive(true);
+        public void OnEnable()
+        {
+            cachedUiMode = Plugin.Config.UIMode;
         }
     }
 }

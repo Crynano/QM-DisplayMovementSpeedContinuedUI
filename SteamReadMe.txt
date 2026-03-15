@@ -1,20 +1,27 @@
-[h1] Display Movement Speed Continued - UI [Permanent Version] [/h1]
+[h1] Display Movement Speed UI [/h1]
 
-This version of Display Movement Speed mod shows UI when hovering over an enemy.
+Display Movement Speed display enemy stats in a simple UI over them.
 
-The UI features extra information to quickly assess dangerous enemies.
-
-All of these options can be toggled on and off in the config file, or using the Mod Configuration Menu.
+This version comes with a AlwaysOn or OnHover option in the config.
 
 [h2] Continued Notes [/h2]
 This mod is a version of the Continued mod by [url=https://github.com/NBKRedSpy]NBK_RedSpy[/url] 
-We are maintaining different versions of it for user preference.
 
 At the same time, a continuation of GitHub user [url=https://github.com/jamsge]jamsge[/url]'s mod
 
 If needed, the mod will be taken down upon original author's request.
 
 [h2]Updates[/h2]
+v.2.0.0
+- Merged the two versions into this one. Now user can choose between AlwaysOn or HoverOnly mode.
+- Optimized the AlwaysOn system so its not always calculating values under the hood.
+- Updated visuals, added fade and updated shaders to work with fade.
+- Now damage sprites are recovered from the game and treated with a shader. This should give the mod some future-proofing.
+
+v1.3.1
+- Changed damage type search from ammo to weapon. (Thanks to everyone who reported this!)
+- Optimized UI loading. Users were experiencing lag when the menu was shown for the first time.
+
 v.1.3.0
 - Added attack type icon.
 - Added numeric health display

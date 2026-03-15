@@ -1,18 +1,14 @@
-# Display Enemy Movement Speed - Continued Upgraded UI
+# Display Movement Speed UI
 ![Melee and ranged UI example](./media/thumbnail.png)
+
+Adds UI over enemies displaying relevant combat information.
+Has a mode to toggle between AlwaysOn or OnHover.
 
 ## **Important!**
 Make sure you are not subscribed to neither the original Display Enemy Movement Speed mod or the Continued version, or this mod will not work correctly.
 
-# Functionality
-For the people constantly right clicking on enemies to not get owned by 3AP melee goons. 
-Shows the amount of action points an enemy can spend. If the enemy is melee only, an 'M' will also be displayed.
-
-Toggleable with the comma key, rebindable with a config file.
-
 # Continued Notes
 This mod is a version of the Continued mod by [NBK_RedSpy](https://github.com/NBKRedSpy).
-We are maintaining different versions of it for user preference.
 
 At the same time, a continuation of GitHub user [jamsge's](https://github.com/jamsge) mod.
 
