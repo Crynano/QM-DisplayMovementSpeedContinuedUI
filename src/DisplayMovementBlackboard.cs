@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
 
 namespace QM_DisplayMovementSpeedContinuedUI
 {
@@ -33,9 +32,31 @@ namespace QM_DisplayMovementSpeedContinuedUI
         private void LoadDamageSprites()
         {
             DamageSprites = Data.DamageTypes.Records
-                .Select(x => new { Record = x, Descriptor = x.ContentDescriptor as DamageTypesDescriptor })
-                .Where(x => x.Descriptor != null)
-                .ToDictionary(x => x.Record.Id, x => x.Descriptor.ResistTypeIcon);
+                .Select(damageType =>
+                {
+                    var descriptor = damageType.ContentDescriptor as DamageTypesDescriptor;
+                    var icon = descriptor?.ResistTypeIcon;
+
+                    if (icon == null && damageType.ResistTypes.Count > 0)
+                    {
+                        var firstResistTypeRecord = Data.DamageTypes.GetRecord(damageType.ResistTypes[0]);
+                        if (firstResistTypeRecord != null)
+                        {
+                            icon = ((DamageTypesDescriptor)firstResistTypeRecord.ContentDescriptor).ResistTypeIcon;
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"Damage type {damageType.Id} has a resist type {damageType.ResistTypes[0]} that does not exist in the data.");
+                        }
+                    }
+                    else if (icon == null)
+                    {
+                        Debug.LogWarning($"Damage type {damageType.Id} does not have a resist type icon and has no resist types to fallback to.");
+                    }
+
+                    return new { Id = damageType.Id, Icon = icon };
+                })
+                .ToDictionary(x => x.Id, x => x.Icon);
         }
     }
 }
