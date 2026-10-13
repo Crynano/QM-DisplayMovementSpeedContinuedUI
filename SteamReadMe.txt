@@ -1,53 +1,71 @@
-[h1]Display Enemy Movement Speed - Continued...[/h1]
+[h1] Display Movement Speed UI [/h1]
 
+Display Movement Speed display enemy stats in a simple UI over them.
 
-[h1]Functionality[/h1]
+This version comes with a AlwaysOn or OnHover option in the config.
 
-For the people constantly right clicking on enemies to not get owned by 3AP melee goons.
-Shows the amount of action points an enemy can spend. If the enemy is melee only, an 'M' will also be displayed.
+[h2] Continued Notes [/h2]
+This mod is a version of the Continued mod by [url=https://github.com/NBKRedSpy]NBK_RedSpy[/url] 
 
-Toggleable with the comma key, rebindable with a config file.
+At the same time, a continuation of GitHub user [url=https://github.com/jamsge]jamsge[/url]'s mod
 
-[h1]Continued Notes[/h1]
+If needed, the mod will be taken down upon original author's request.
 
-This is a continuation of GitHub user [url=https://github.com/jamsge]jamsge's[/url] fantastic mod of the same name.
-If the original author comes back, this mod will be removed in favor of their mod listing.
+[h2]Updates[/h2]
+v.2.0.0
+- Merged the two versions into this one. Now user can choose between AlwaysOn or HoverOnly mode.
+- Optimized the AlwaysOn system so its not always calculating values under the hood.
+- Updated visuals, added fade and updated shaders to work with fade.
+- Now damage sprites are recovered from the game and treated with a shader. This should give the mod some future-proofing.
 
-[h2][b]Important![/b][/h2]
+v1.3.1
+- Changed damage type search from ammo to weapon. (Thanks to everyone who reported this!)
+- Optimized UI loading. Users were experiencing lag when the menu was shown for the first time.
 
-Make sure you are not subscribed to the original Display Enemy Movement Speed mod, or this mod will not work correctly.
-Unsubscribing from the mod should be all that is necessary.  However, if for some reason there are issues, delete the original mod's folder located at [i]<Steam Director>\steamapps\workshop\content\2059170\3282796258[/i].
+v.1.3.0
+- Added attack type icon.
+- Added numeric health display
+- Reorganized UI layout
+- Remade bar with a custom shader. Now chunks are sharper than ever!
+- Remade how UI scales with zoom. Now its compatible with any mod that changes zoom levels.
 
-[h2]Config[/h2]
+v.1.2.1
+- Added healthbar back to users without Mod Configuration Menu
 
-To rebind the comma key toggle, go to:
-[i]%UserProfile%\AppData\LocalLow\Magnum Scriptum Ltd\Quasimorph_ModConfigs\QM_DisplayMovementSpeedContinued\config.json[/i]
-and change "Comma" [url=https://docs.unity3d.com/ScriptReference/KeyCode.html]with a Unity Keycode of your choice (scroll down to the Properties section)[/url].
+v1.2.0
+- Added new configuration options
+- Added MCM support
+- Tweaked UI font and colors
 
-[h2]Source[/h2]
+v.1.1.0
+- UI Scales with Camera Zoom
 
-https://github.com/NBKRedSpy/QM-DisplayMovementSpeedContinued
+Bugfixes
+- Fixed a bug where the premature destruction of the enemy would throw an error message.
 
-[h2]Credits[/h2]
+[h2] Alternative Versions [/h2]
+NBK_RedSpy's continued version can be found here:
+https://steamcommunity.com/sharedfiles/filedetails/?id=3417898256
 
-[url=https://www.textstudio.com/]"Continued" font created with textstudio.com[/url]
+I have uploaded an alternative permanent version here: (it will be merged with this one soon)
+https://steamcommunity.com/sharedfiles/filedetails/?id=3426072300
 
-[h2]FAQ[/h2]
+Note that only one "Display Enemy Movement Speed" mod can be run at a time.
 
-[i][b]I ran into an bug, what do I do?[/b][/i]
-If you run into issues, please let me know through comment or forum post with details so I can try to make fixes.
+[h2] Support [/h2]
+For my sleepless nights and my quick bugfixing, here's my [url=https://ko-fi.com/crynano]KoFi[/url] page.
+I accept suggestions or we can talk if you wish a for a specific mod.
 
-[i][b]Can you make XYZ feature?[/b][/i]
-I can't guarantee anything, but please feel free to leave a comment or forum post with suggestions.
-
-*** I can't find the config file! What do I do? ***
-You need to run the game at least once for a config file to generate
-
-[h1]Change Log[/h1]
-
-[h2]1.1.0[/h2]
+[h2] Source [/h2]
 [list]
-[*]Created this continuation mod.
-[*]Quasimorph 0.8.5 compatibility.
-[*]Added "M" for melee.
+[*][url=https://github.com/Crynano/QM-DisplayMovementSpeedContinuedUI]Crynano's UI version[/url]
+[*][url=https://github.com/NBKRedSpy/QM-DisplayMovementSpeedContinued]NBK_RedSpy's Continued version[/url]
+[/list]
+
+[h2] Credits [/h2]
+[list]
+[*]Original source code used from [b]NBK_RedSpy[/b] and [b]jamsge's[/b]
+[*]Melee and Ranged sprites from [b]Lynchantiure[/b]
+[*]Damage type icons extracted from the game.
+[*]Font used: https://www.fontspace.com/minecraft-font-f28180
 [/list]
